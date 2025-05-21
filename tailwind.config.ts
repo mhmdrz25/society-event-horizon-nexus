@@ -1,3 +1,4 @@
+
 import type { Config } from "tailwindcss";
 
 export default {
@@ -52,6 +53,15 @@ export default {
 					DEFAULT: 'hsl(var(--card))',
 					foreground: 'hsl(var(--card-foreground))'
 				},
+				space: {
+					'dark-blue': '#0A1128',
+					'deep-blue': '#001F54',
+					'cosmic-blue': '#034078',
+					'stellar': '#1282A2',
+					'nebula-purple': '#6E59A5',
+					'cosmic-purple': '#8B5CF6',
+					'stellar-white': '#FEFCFB',
+				},
 				sidebar: {
 					DEFAULT: 'hsl(var(--sidebar-background))',
 					foreground: 'hsl(var(--sidebar-foreground))',
@@ -84,11 +94,22 @@ export default {
 					to: {
 						height: '0'
 					}
+				},
+				'twinkle': {
+					'0%, 100%': { opacity: '1' },
+					'50%': { opacity: '0.3' },
 				}
 			},
 			animation: {
 				'accordion-down': 'accordion-down 0.2s ease-out',
-				'accordion-up': 'accordion-up 0.2s ease-out'
+				'accordion-up': 'accordion-up 0.2s ease-out',
+				'twinkle-1': 'twinkle 4s ease-in-out infinite',
+				'twinkle-2': 'twinkle 5s ease-in-out infinite 0.5s',
+				'twinkle-3': 'twinkle 6s ease-in-out infinite 1s',
+			},
+			backgroundImage: {
+				'space-gradient': 'linear-gradient(to bottom, #0A1128, #001F54, #034078)',
+				'nebula-gradient': 'linear-gradient(135deg, #6E59A5, #1282A2)',
 			}
 		}
 	},
