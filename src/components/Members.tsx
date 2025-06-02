@@ -4,24 +4,24 @@ import React from 'react';
 const membersList = [
   {
     id: 1,
-    name: "Dr. Michael Chen",
-    role: "Founder & Astrophysicist",
+    name: "دکتر محمد کریمی",
+    role: "بنیانگذار و اخترفیزیکدان",
     image: "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=400&h=400&fit=crop",
-    quote: "The event horizon marks not just the boundary of a black hole, but the boundary of our current understanding. That's why we're here—to push beyond."
+    quote: "افق رویداد نه تنها مرز سیاه‌چاله بلکه مرز درک کنونی ما را نشان می‌دهد. به همین دلیل ما اینجا هستیم - تا فراتر برویم."
   },
   {
     id: 2,
-    name: "Dr. Sophia Rodriguez",
-    role: "Theoretical Physicist",
+    name: "دکتر سارا احمدی",
+    role: "فیزیکدان نظری",
     image: "https://images.unsplash.com/photo-1494790108377-be9c29b29330?w=400&h=400&fit=crop",
-    quote: "When we look into space, we're looking into our own origins. The Event Horizon Society has given me a community to share that wonder with."
+    quote: "وقتی به فضا نگاه می‌کنیم، در واقع به آغاز خودمان نگاه می‌کنیم. انجمن افق رویداد جامعه‌ای برای تسهیم این شگفتی به من داده است."
   },
   {
     id: 3,
-    name: "James Wilson",
-    role: "Astronomy Educator",
+    name: "علی رضایی",
+    role: "مربی نجوم",
     image: "https://images.unsplash.com/photo-1500648767791-00dcc994a43e?w=400&h=400&fit=crop",
-    quote: "Making complex science accessible is my passion. Through our events, we turn cosmic curiosity into cosmic understanding."
+    quote: "قابل دسترس کردن علوم پیچیده، شور و شوق من است. از طریق رویدادهایمان، کنجکاوی کیهانی را به درک کیهانی تبدیل می‌کنیم."
   }
 ];
 
@@ -33,10 +33,10 @@ const Members = () => {
       
       <div className="container mx-auto px-6">
         <div className="text-center mb-16">
-          <h2 className="text-3xl md:text-4xl font-bold mb-4 cosmic-glow">Our Members</h2>
+          <h2 className="text-3xl md:text-4xl font-bold mb-4 cosmic-glow">اعضای ما</h2>
           <div className="w-20 h-1 bg-space-stellar mx-auto"></div>
           <p className="mt-4 text-lg max-w-2xl mx-auto">
-            Meet some of the passionate individuals who make up our cosmic community.
+            با برخی از افراد پرشوری که جامعه کیهانی ما را تشکیل می‌دهند آشنا شوید.
           </p>
         </div>
         
@@ -63,11 +63,11 @@ const Members = () => {
         
         <div className="mt-16 text-center">
           <p className="mb-8 text-lg">
-            Our society brings together over 200 members from diverse backgrounds – students, researchers, professionals, and space enthusiasts of all kinds.
+            انجمن ما بیش از ۲۰۰ عضو از پیشینه‌های مختلف را گرد هم می‌آورد - دانشجویان، محققان، متخصصان و علاقه‌مندان فضا از همه نوع.
           </p>
           
           <a href="#contact" className="cosmic-button">
-            Become a Member
+            عضو شوید
           </a>
         </div>
       </div>

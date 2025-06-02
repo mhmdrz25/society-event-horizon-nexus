@@ -7,7 +7,7 @@ const Contact = () => {
   const [formData, setFormData] = useState({
     name: '',
     email: '',
-    interest: 'General Inquiry',
+    interest: 'سؤال عمومی',
     message: ''
   });
 
@@ -20,12 +20,12 @@ const Contact = () => {
     e.preventDefault();
     // In a real app, this would send the data to a server
     console.log('Form submitted:', formData);
-    toast.success('Thank you for your message! We will be in touch soon.');
+    toast.success('از پیام شما متشکریم! به زودی با شما تماس خواهیم گرفت.');
     // Reset form
     setFormData({
       name: '',
       email: '',
-      interest: 'General Inquiry',
+      interest: 'سؤال عمومی',
       message: ''
     });
   };
@@ -37,17 +37,17 @@ const Contact = () => {
       
       <div className="container mx-auto px-6">
         <div className="text-center mb-16">
-          <h2 className="text-3xl md:text-4xl font-bold mb-4 cosmic-glow">Join Our Community</h2>
+          <h2 className="text-3xl md:text-4xl font-bold mb-4 cosmic-glow">به جامعه ما بپیوندید</h2>
           <div className="w-20 h-1 bg-space-stellar mx-auto"></div>
           <p className="mt-4 text-lg max-w-2xl mx-auto">
-            Interested in becoming a member or have questions about the Event Horizon Society? Reach out to us!
+            علاقه‌مند به عضویت در انجمن افق رویداد هستید یا سؤالی دارید؟ با ما تماس بگیرید!
           </p>
         </div>
         
         <div className="max-w-4xl mx-auto">
           <div className="grid md:grid-cols-2 gap-12">
             <div>
-              <h3 className="text-xl font-bold mb-6 text-space-stellar">Contact Information</h3>
+              <h3 className="text-xl font-bold mb-6 text-space-stellar">اطلاعات تماس</h3>
               
               <div className="nebula-card mb-8">
                 <div className="flex items-center mb-4">
@@ -56,32 +56,32 @@ const Contact = () => {
                 </div>
                 
                 <p className="mb-4">
-                  Our regular meetings are held on the third Monday of each month at the Community Science Center.
+                  جلسات منظم ما در سومین دوشنبه هر ماه در مرکز علوم اجتماعی برگزار می‌شود.
                 </p>
                 
                 <p>
-                  Membership is open to anyone with an interest in astronomy, astrophysics, or space exploration.
+                  عضویت برای همه علاقه‌مندان به نجوم، اخترفیزیک یا کاوش فضایی باز است.
                 </p>
               </div>
               
               <div>
-                <h4 className="font-bold mb-4">Membership Benefits</h4>
-                <ul className="list-disc pl-5 space-y-2">
-                  <li>Access to monthly lectures and workshops</li>
-                  <li>Participation in exclusive stargazing events</li>
-                  <li>Subscription to our quarterly newsletter</li>
-                  <li>Networking with fellow space enthusiasts</li>
-                  <li>Discounted rates for special events</li>
+                <h4 className="font-bold mb-4">مزایای عضویت</h4>
+                <ul className="list-disc pr-5 space-y-2">
+                  <li>دسترسی به سخنرانی‌ها و کارگاه‌های ماهانه</li>
+                  <li>شرکت در رویدادهای ویژه رصد ستارگان</li>
+                  <li>اشتراک خبرنامه فصلی ما</li>
+                  <li>ارتباط با سایر علاقه‌مندان فضا</li>
+                  <li>نرخ تخفیف‌دار برای رویدادهای ویژه</li>
                 </ul>
               </div>
             </div>
             
             <div>
-              <h3 className="text-xl font-bold mb-6 text-space-stellar">Get in Touch</h3>
+              <h3 className="text-xl font-bold mb-6 text-space-stellar">با ما در تماس باشید</h3>
               
               <form onSubmit={handleSubmit} className="space-y-6">
                 <div>
-                  <label htmlFor="name" className="block mb-2 text-sm font-medium">Name</label>
+                  <label htmlFor="name" className="block mb-2 text-sm font-medium">نام</label>
                   <input
                     type="text"
                     id="name"
@@ -94,7 +94,7 @@ const Contact = () => {
                 </div>
                 
                 <div>
-                  <label htmlFor="email" className="block mb-2 text-sm font-medium">Email</label>
+                  <label htmlFor="email" className="block mb-2 text-sm font-medium">ایمیل</label>
                   <input
                     type="email"
                     id="email"
@@ -107,7 +107,7 @@ const Contact = () => {
                 </div>
                 
                 <div>
-                  <label htmlFor="interest" className="block mb-2 text-sm font-medium">I'm interested in</label>
+                  <label htmlFor="interest" className="block mb-2 text-sm font-medium">علاقه‌مندی من</label>
                   <select
                     id="interest"
                     name="interest"
@@ -115,16 +115,16 @@ const Contact = () => {
                     onChange={handleChange}
                     className="w-full px-4 py-3 bg-space-dark-blue/50 border border-space-stellar/30 rounded-lg focus:outline-none focus:ring-2 focus:ring-space-stellar"
                   >
-                    <option>General Inquiry</option>
-                    <option>Becoming a Member</option>
-                    <option>Volunteering</option>
-                    <option>Speaking at an Event</option>
-                    <option>Sponsorship Opportunities</option>
+                    <option>سؤال عمومی</option>
+                    <option>عضویت</option>
+                    <option>داوطلبی</option>
+                    <option>سخنرانی در رویداد</option>
+                    <option>فرصت‌های حمایت مالی</option>
                   </select>
                 </div>
                 
                 <div>
-                  <label htmlFor="message" className="block mb-2 text-sm font-medium">Message</label>
+                  <label htmlFor="message" className="block mb-2 text-sm font-medium">پیام</label>
                   <textarea
                     id="message"
                     name="message"
@@ -137,8 +137,8 @@ const Contact = () => {
                 </div>
                 
                 <button type="submit" className="cosmic-button flex items-center justify-center w-full">
-                  <Send className="w-4 h-4 mr-2" />
-                  Send Message
+                  <Send className="w-4 h-4 ml-2" />
+                  ارسال پیام
                 </button>
               </form>
             </div>

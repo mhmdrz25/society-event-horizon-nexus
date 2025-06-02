@@ -56,17 +56,17 @@ const Hero = () => {
       
       <div className="container mx-auto px-6 z-10 text-center">
         <h1 className="text-4xl md:text-6xl lg:text-7xl font-bold mb-6 cosmic-glow">
-          Event Horizon Society
+          انجمن افق رویداد
         </h1>
         <p className="text-xl md:text-2xl mb-10 max-w-3xl mx-auto text-space-stellar">
-          Exploring the boundaries of science, space, and the mysteries of the cosmos.
+          کاوش در مرزهای علم، فضا و رازهای کیهان
         </p>
         <div className="flex flex-col sm:flex-row justify-center gap-4">
           <a href="#about" className="cosmic-button">
-            Discover Our Mission
+            ماموریت ما را کشف کنید
           </a>
           <a href="#events" className="border border-space-stellar text-space-stellar px-6 py-3 rounded-lg font-semibold hover:bg-space-stellar/10 transition-colors">
-            Upcoming Events
+            رویدادهای آینده
           </a>
         </div>
       </div>

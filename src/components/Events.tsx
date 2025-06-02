@@ -5,38 +5,38 @@ import { Calendar, MapPin, Clock } from 'lucide-react';
 const eventsList = [
   {
     id: 1,
-    title: "The Mathematics of Black Holes",
-    date: "June 15, 2025",
-    time: "7:00 PM - 9:00 PM",
-    location: "Virtual - Zoom",
-    description: "Dr. Elena Vasquez explains the mathematical models that describe black holes and their behavior.",
+    title: "ریاضیات سیاه‌چاله‌ها",
+    date: "۲۵ خرداد ۱۴۰۴",
+    time: "۱۹:۰۰ - ۲۱:۰۰",
+    location: "مجازی - زوم",
+    description: "دکتر الهام وثیقی مدل‌های ریاضی توصیف‌کننده سیاه‌چاله‌ها و رفتار آنها را شرح می‌دهد.",
     featured: true
   },
   {
     id: 2,
-    title: "Summer Stargazing Night",
-    date: "July 22, 2025",
-    time: "10:00 PM - 1:00 AM",
-    location: "Mountain View Observatory",
-    description: "Join us for a night of stargazing with professional telescopes. Weather permitting.",
+    title: "شب رصد ستارگان تابستان",
+    date: "۳۱ تیر ۱۴۰۴",
+    time: "۲۲:۰۰ - ۰۱:۰۰",
+    location: "رصدخانه کوه‌نما",
+    description: "برای شبی از رصد ستارگان با تلسکوپ‌های حرفه‌ای به ما بپیوندید. مشروط به مناسب بودن آب و هوا.",
     featured: true
   },
   {
     id: 3,
-    title: "Exploring Exoplanets Workshop",
-    date: "August 5, 2025",
-    time: "2:00 PM - 5:00 PM",
-    location: "Science Center Auditorium",
-    description: "A hands-on workshop about detecting and studying planets outside our solar system.",
+    title: "کارگاه کاوش سیارات فراخورشیدی",
+    date: "۱۴ مرداد ۱۴۰۴",
+    time: "۱۴:۰۰ - ۱۷:۰۰",
+    location: "آمفی‌تئاتر مرکز علوم",
+    description: "کارگاه عملی در مورد شناسایی و مطالعه سیارات خارج از منظومه شمسی.",
     featured: false
   },
   {
     id: 4,
-    title: "Monthly Member Meeting",
-    date: "August 18, 2025",
-    time: "6:30 PM - 8:30 PM",
-    location: "Community Center Room 203",
-    description: "Regular society meeting with updates, planning, and a short presentation on recent discoveries.",
+    title: "جلسه ماهانه اعضا",
+    date: "۲۷ مرداد ۱۴۰۴",
+    time: "۱۸:۳۰ - ۲۰:۳۰",
+    location: "مرکز اجتماعی اتاق ۲۰۳",
+    description: "جلسه منظم انجمن با به‌روزرسانی‌ها، برنامه‌ریزی و ارائه کوتاه در مورد اکتشافات اخیر.",
     featured: false
   }
 ];
@@ -49,10 +49,10 @@ const Events = () => {
       
       <div className="container mx-auto px-6">
         <div className="text-center mb-16">
-          <h2 className="text-3xl md:text-4xl font-bold mb-4 cosmic-glow">Upcoming Events</h2>
+          <h2 className="text-3xl md:text-4xl font-bold mb-4 cosmic-glow">رویدادهای آینده</h2>
           <div className="w-20 h-1 bg-space-stellar mx-auto"></div>
           <p className="mt-4 text-lg max-w-2xl mx-auto">
-            Join us for our upcoming events and activities. Open to members and non-members alike!
+            در رویدادها و فعالیت‌های آینده ما شرکت کنید. برای اعضا و غیراعضا باز است!
           </p>
         </div>
         
@@ -81,24 +81,24 @@ const Events = () => {
               <p className="mb-6">{event.description}</p>
               
               <button className="cosmic-button text-sm">
-                Register for Event
+                ثبت‌نام رویداد
               </button>
             </div>
           ))}
         </div>
         
         <div className="mt-12">
-          <h3 className="text-xl font-bold mb-6 text-center">More Upcoming Events</h3>
+          <h3 className="text-xl font-bold mb-6 text-center">رویدادهای بیشتر</h3>
           
           <div className="nebula-card">
             <div className="overflow-x-auto">
               <table className="w-full">
                 <thead>
                   <tr className="border-b border-space-stellar/20">
-                    <th className="text-left py-3 px-4">Event</th>
-                    <th className="text-left py-3 px-4">Date</th>
-                    <th className="text-left py-3 px-4">Location</th>
-                    <th className="text-left py-3 px-4"></th>
+                    <th className="text-right py-3 px-4">رویداد</th>
+                    <th className="text-right py-3 px-4">تاریخ</th>
+                    <th className="text-right py-3 px-4">مکان</th>
+                    <th className="text-right py-3 px-4"></th>
                   </tr>
                 </thead>
                 <tbody>
@@ -115,7 +115,7 @@ const Events = () => {
                       <td className="py-4 px-4">{event.location}</td>
                       <td className="py-4 px-4">
                         <button className="px-4 py-2 text-sm border border-space-stellar rounded hover:bg-space-stellar/10 transition-colors">
-                          Details
+                          جزئیات
                         </button>
                       </td>
                     </tr>
@@ -127,7 +127,7 @@ const Events = () => {
           
           <div className="text-center mt-8">
             <button className="cosmic-button">
-              View Full Calendar
+              مشاهده تقویم کامل
             </button>
           </div>
         </div>
