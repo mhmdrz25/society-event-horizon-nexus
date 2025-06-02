@@ -1,9 +1,12 @@
 
 import React, { useState } from 'react';
-import { Menu, X } from 'lucide-react';
+import { Menu, X, User } from 'lucide-react';
+import { useAuth } from '@/hooks/useAuth';
+import { Button } from '@/components/ui/button';
 
 const Navbar = () => {
   const [isOpen, setIsOpen] = useState(false);
+  const { user } = useAuth();
 
   return (
     <nav className="py-4 px-6 md:px-16 flex justify-between items-center relative z-50 backdrop-blur-md bg-space-dark-blue/80 sticky top-0">
@@ -18,7 +21,19 @@ const Navbar = () => {
         <li><a href="#about" className="hover:text-space-cosmic-purple transition-colors">درباره ما</a></li>
         <li><a href="#events" className="hover:text-space-cosmic-purple transition-colors">رویدادها</a></li>
         <li><a href="#members" className="hover:text-space-cosmic-purple transition-colors">اعضا</a></li>
-        <li><a href="#contact" className="cosmic-button">به ما بپیوندید</a></li>
+        {user ? (
+          <>
+            <li><a href="/dashboard" className="hover:text-space-cosmic-purple transition-colors">داشبورد</a></li>
+            <li>
+              <Button size="sm" variant="outline" className="flex items-center gap-2">
+                <User className="h-4 w-4" />
+                {user.user_metadata?.name || user.email}
+              </Button>
+            </li>
+          </>
+        ) : (
+          <li><a href="/auth" className="cosmic-button">ورود / ثبت‌نام</a></li>
+        )}
       </ul>
       
       {/* Mobile Menu Button */}
@@ -36,7 +51,18 @@ const Navbar = () => {
             <li><a href="#about" className="block py-2 hover:text-space-cosmic-purple" onClick={() => setIsOpen(false)}>درباره ما</a></li>
             <li><a href="#events" className="block py-2 hover:text-space-cosmic-purple" onClick={() => setIsOpen(false)}>رویدادها</a></li>
             <li><a href="#members" className="block py-2 hover:text-space-cosmic-purple" onClick={() => setIsOpen(false)}>اعضا</a></li>
-            <li><a href="#contact" className="cosmic-button block text-center" onClick={() => setIsOpen(false)}>به ما بپیوندید</a></li>
+            {user ? (
+              <>
+                <li><a href="/dashboard" className="block py-2 hover:text-space-cosmic-purple" onClick={() => setIsOpen(false)}>داشبورد</a></li>
+                <li className="pt-2 border-t border-space-stellar/20">
+                  <span className="text-sm text-space-stellar/60">
+                    {user.user_metadata?.name || user.email}
+                  </span>
+                </li>
+              </>
+            ) : (
+              <li><a href="/auth" className="cosmic-button block text-center" onClick={() => setIsOpen(false)}>ورود / ثبت‌نام</a></li>
+            )}
           </ul>
         </div>
       )}
