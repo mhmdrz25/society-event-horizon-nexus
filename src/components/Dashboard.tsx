@@ -4,6 +4,7 @@ import { useAuth } from '@/hooks/useAuth';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Calendar, Users, FileText, Bell } from 'lucide-react';
+import MySubmissions from '@/components/MySubmissions';
 
 const Dashboard = () => {
   const { user, signOut } = useAuth();
@@ -78,7 +79,7 @@ const Dashboard = () => {
         </Card>
       </div>
 
-      <div className="grid md:grid-cols-2 gap-6">
+      <div className="grid lg:grid-cols-2 gap-6 mb-8">
         <Card className="nebula-card">
           <CardHeader>
             <CardTitle>آخرین رویدادها</CardTitle>
@@ -127,7 +128,7 @@ const Dashboard = () => {
               </div>
               <div className="border-b border-space-stellar/20 pb-2">
                 <p className="font-medium">مسابقه عکاسی نجومی</p>
-                <p className="text-sm text-space-stellar/60">
+                <p className="text-xs text-space-stellar/60">
                   مسابقه عکاسی نجومی انجمن شروع شده است.
                 </p>
               </div>
@@ -135,6 +136,8 @@ const Dashboard = () => {
           </CardContent>
         </Card>
       </div>
+
+      <MySubmissions />
     </div>
   );
 };

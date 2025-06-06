@@ -299,6 +299,33 @@ export type Database = {
         }
         Relationships: []
       }
+      verified_phones: {
+        Row: {
+          created_at: string
+          id: string
+          is_verified: boolean
+          phone_number: string
+          verification_code: string | null
+          verified_at: string | null
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          is_verified?: boolean
+          phone_number: string
+          verification_code?: string | null
+          verified_at?: string | null
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          is_verified?: boolean
+          phone_number?: string
+          verification_code?: string | null
+          verified_at?: string | null
+        }
+        Relationships: []
+      }
     }
     Views: {
       [_ in never]: never
@@ -311,7 +338,7 @@ export type Database = {
     }
     Enums: {
       submission_status: "pending" | "approved" | "rejected"
-      user_role: "student" | "member" | "admin"
+      user_role: "student" | "member" | "admin" | "instructor"
     }
     CompositeTypes: {
       [_ in never]: never
@@ -428,7 +455,7 @@ export const Constants = {
   public: {
     Enums: {
       submission_status: ["pending", "approved", "rejected"],
-      user_role: ["student", "member", "admin"],
+      user_role: ["student", "member", "admin", "instructor"],
     },
   },
 } as const

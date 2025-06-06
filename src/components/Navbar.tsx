@@ -21,6 +21,7 @@ const Navbar = () => {
         <li><a href="#about" className="hover:text-space-cosmic-purple transition-colors">درباره ما</a></li>
         <li><a href="#events" className="hover:text-space-cosmic-purple transition-colors">رویدادها</a></li>
         <li><a href="#members" className="hover:text-space-cosmic-purple transition-colors">اعضا</a></li>
+        <li><a href="/submissions" className="hover:text-space-cosmic-purple transition-colors">ارسال مقاله</a></li>
         {user ? (
           <>
             <li><a href="/dashboard" className="hover:text-space-cosmic-purple transition-colors">داشبورد</a></li>
@@ -51,6 +52,7 @@ const Navbar = () => {
             <li><a href="#about" className="block py-2 hover:text-space-cosmic-purple" onClick={() => setIsOpen(false)}>درباره ما</a></li>
             <li><a href="#events" className="block py-2 hover:text-space-cosmic-purple" onClick={() => setIsOpen(false)}>رویدادها</a></li>
             <li><a href="#members" className="block py-2 hover:text-space-cosmic-purple" onClick={() => setIsOpen(false)}>اعضا</a></li>
+            <li><a href="/submissions" className="block py-2 hover:text-space-cosmic-purple" onClick={() => setIsOpen(false)}>ارسال مقاله</a></li>
             {user ? (
               <>
                 <li><a href="/dashboard" className="block py-2 hover:text-space-cosmic-purple" onClick={() => setIsOpen(false)}>داشبورد</a></li>
