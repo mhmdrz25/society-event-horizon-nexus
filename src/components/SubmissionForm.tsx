@@ -11,7 +11,7 @@ import { zodResolver } from '@hookform/resolvers/zod';
 import * as z from 'zod';
 import { supabase } from '@/integrations/supabase/client';
 import { toast } from '@/components/ui/use-toast';
-import { Upload, FileText, Loader2 } from 'lucide-react';
+import { Upload, FileText, Loader2, X } from 'lucide-react';
 
 const formSchema = z.object({
   title: z.string().min(5, 'عنوان باید حداقل ۵ کاراکتر باشد'),
@@ -23,6 +23,7 @@ const SubmissionForm = () => {
   const { user } = useAuth();
   const [isLoading, setIsLoading] = useState(false);
   const [selectedFile, setSelectedFile] = useState<File | null>(null);
+  const [dragActive, setDragActive] = useState(false);
 
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
@@ -35,23 +36,78 @@ const SubmissionForm = () => {
   const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
     if (file) {
-      if (file.type === 'application/pdf') {
+      if (file.type === 'application/pdf' && file.size <= 10 * 1024 * 1024) {
         setSelectedFile(file);
         form.setValue('file', file);
+        toast({
+          title: 'موفقیت',
+          description: 'فایل PDF انتخاب شد',
+        });
       } else {
         toast({
           title: 'خطا',
-          description: 'فقط فایل‌های PDF مجاز هستند',
+          description: 'فقط فایل‌های PDF با حجم کمتر از ۱۰ مگابایت مجاز هستند',
           variant: 'destructive',
         });
       }
     }
   };
 
+  const handleDrag = (e: React.DragEvent) => {
+    e.preventDefault();
+    e.stopPropagation();
+    if (e.type === "dragenter" || e.type === "dragover") {
+      setDragActive(true);
+    } else if (e.type === "dragleave") {
+      setDragActive(false);
+    }
+  };
+
+  const handleDrop = (e: React.DragEvent) => {
+    e.preventDefault();
+    e.stopPropagation();
+    setDragActive(false);
+    
+    const files = e.dataTransfer.files;
+    if (files && files[0]) {
+      const file = files[0];
+      if (file.type === 'application/pdf' && file.size <= 10 * 1024 * 1024) {
+        setSelectedFile(file);
+        form.setValue('file', file);
+        toast({
+          title: 'موفقیت',
+          description: 'فایل PDF انتخاب شد',
+        });
+      } else {
+        toast({
+          title: 'خطا',
+          description: 'فقط فایل‌های PDF با حجم کمتر از ۱۰ مگابایت مجاز هستند',
+          variant: 'destructive',
+        });
+      }
+    }
+  };
+
+  const removeFile = (e: React.MouseEvent) => {
+    e.preventDefault();
+    e.stopPropagation();
+    setSelectedFile(null);
+    form.setValue('file', undefined);
+  };
+
   const onSubmit = async (values: z.infer<typeof formSchema>) => {
-    if (!user) return;
+    if (!user) {
+      toast({
+        title: 'خطا',
+        description: 'برای ارسال مقاله ابتدا وارد شوید',
+        variant: 'destructive',
+      });
+      return;
+    }
 
     setIsLoading(true);
+    console.log('شروع ارسال مقاله...', { title: values.title, hasFile: !!selectedFile });
+    
     try {
       // ایجاد رکورد ارسال در پایگاه داده
       const { data: submission, error: submissionError } = await supabase
@@ -65,17 +121,31 @@ const SubmissionForm = () => {
         .select()
         .single();
 
-      if (submissionError) throw submissionError;
+      if (submissionError) {
+        console.error('خطا در ایجاد submission:', submissionError);
+        throw submissionError;
+      }
+
+      console.log('submission ایجاد شد:', submission);
 
       // آپلود فایل در صورت انتخاب
       if (selectedFile && submission) {
+        console.log('شروع آپلود فایل...', selectedFile.name);
         const fileName = `${user.id}/${submission.id}/${selectedFile.name}`;
         
         const { error: uploadError } = await supabase.storage
           .from('submissions')
-          .upload(fileName, selectedFile);
+          .upload(fileName, selectedFile, {
+            cacheControl: '3600',
+            upsert: false
+          });
 
-        if (uploadError) throw uploadError;
+        if (uploadError) {
+          console.error('خطا در آپلود فایل:', uploadError);
+          throw uploadError;
+        }
+
+        console.log('فایل آپلود شد، ذخیره اطلاعات در پایگاه داده...');
 
         // ذخیره اطلاعات فایل در پایگاه داده
         const { error: fileError } = await supabase
@@ -89,7 +159,12 @@ const SubmissionForm = () => {
             file_type: selectedFile.type
           });
 
-        if (fileError) throw fileError;
+        if (fileError) {
+          console.error('خطا در ذخیره اطلاعات فایل:', fileError);
+          throw fileError;
+        }
+
+        console.log('اطلاعات فایل ذخیره شد');
       }
 
       toast({
@@ -99,6 +174,7 @@ const SubmissionForm = () => {
 
       form.reset();
       setSelectedFile(null);
+      console.log('فرم ریست شد');
     } catch (error) {
       console.error('Error submitting:', error);
       toast({
@@ -115,7 +191,18 @@ const SubmissionForm = () => {
     return (
       <Card className="nebula-card">
         <CardContent className="p-6">
-          <p className="text-center">برای ارسال مقاله ابتدا وارد شوید</p>
+          <div className="text-center space-y-4">
+            <p>برای ارسال مقاله ابتدا وارد شوید</p>
+            <Button 
+              onClick={(e) => {
+                e.preventDefault();
+                window.location.href = '/auth';
+              }}
+              className="cosmic-button"
+            >
+              ورود / ثبت‌نام
+            </Button>
+          </div>
         </CardContent>
       </Card>
     );
@@ -145,7 +232,7 @@ const SubmissionForm = () => {
                     <Input
                       placeholder="عنوان مقاله خود را وارد کنید"
                       {...field}
-                      className="bg-space-dark-blue/50 border-space-stellar/30"
+                      className="bg-space-dark-blue/50 border-space-stellar/30 focus:border-space-cosmic-purple"
                     />
                   </FormControl>
                   <FormMessage />
@@ -162,7 +249,7 @@ const SubmissionForm = () => {
                   <FormControl>
                     <Textarea
                       placeholder="خلاصه یا محتوای کامل مقاله خود را وارد کنید"
-                      className="min-h-[200px] bg-space-dark-blue/50 border-space-stellar/30"
+                      className="min-h-[200px] bg-space-dark-blue/50 border-space-stellar/30 focus:border-space-cosmic-purple"
                       {...field}
                     />
                   </FormControl>
@@ -175,36 +262,71 @@ const SubmissionForm = () => {
               <label className="block text-sm font-medium mb-2">
                 فایل PDF (اختیاری)
               </label>
-              <div className="border-2 border-dashed border-space-stellar/30 rounded-lg p-6 text-center">
+              <div 
+                className={`relative border-2 border-dashed rounded-lg p-6 text-center transition-colors ${
+                  dragActive 
+                    ? 'border-space-cosmic-purple bg-space-cosmic-purple/10' 
+                    : 'border-space-stellar/30 hover:border-space-cosmic-purple/50'
+                }`}
+                onDragEnter={handleDrag}
+                onDragLeave={handleDrag}
+                onDragOver={handleDrag}
+                onDrop={handleDrop}
+              >
                 <input
                   type="file"
                   accept=".pdf"
                   onChange={handleFileChange}
-                  className="hidden"
+                  className="absolute inset-0 w-full h-full opacity-0 cursor-pointer z-20"
                   id="file-upload"
                 />
-                <label
-                  htmlFor="file-upload"
-                  className="cursor-pointer flex flex-col items-center gap-2"
-                >
-                  <Upload className="h-8 w-8 text-space-cosmic-purple" />
-                  <span className="text-sm">
-                    {selectedFile ? selectedFile.name : 'فایل PDF خود را انتخاب کنید'}
-                  </span>
-                  <span className="text-xs text-space-stellar/60">
-                    حداکثر حجم: ۱۰ مگابایت
-                  </span>
-                </label>
+                
+                {selectedFile ? (
+                  <div className="flex items-center justify-between bg-space-dark-blue/50 p-3 rounded border">
+                    <div className="flex items-center gap-2">
+                      <FileText className="h-5 w-5 text-space-cosmic-purple" />
+                      <div className="text-right">
+                        <p className="font-medium">{selectedFile.name}</p>
+                        <p className="text-xs text-space-stellar/60">
+                          {(selectedFile.size / 1024 / 1024).toFixed(2)} MB
+                        </p>
+                      </div>
+                    </div>
+                    <Button
+                      type="button"
+                      size="sm"
+                      variant="ghost"
+                      onClick={removeFile}
+                      className="text-red-400 hover:text-red-300 hover:bg-red-400/10"
+                    >
+                      <X className="h-4 w-4" />
+                    </Button>
+                  </div>
+                ) : (
+                  <div className="cursor-pointer flex flex-col items-center gap-2">
+                    <Upload className="h-8 w-8 text-space-cosmic-purple" />
+                    <span className="text-sm">
+                      فایل PDF خود را انتخاب کنید یا اینجا بکشید
+                    </span>
+                    <span className="text-xs text-space-stellar/60">
+                      حداکثر حجم: ۱۰ مگابایت
+                    </span>
+                  </div>
+                )}
               </div>
             </div>
 
             <Button
               type="submit"
               disabled={isLoading}
-              className="w-full cosmic-button"
+              className="w-full cosmic-button relative z-30"
+              style={{ pointerEvents: 'auto' }}
             >
               {isLoading ? (
-                <Loader2 className="h-4 w-4 animate-spin" />
+                <>
+                  <Loader2 className="h-4 w-4 animate-spin mr-2" />
+                  در حال ارسال...
+                </>
               ) : (
                 'ارسال مقاله'
               )}

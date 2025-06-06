@@ -17,6 +17,7 @@ const SmsSubmissionForm = ({ phoneNumber }: SmsSubmissionFormProps) => {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+    e.stopPropagation();
     
     if (!content.trim() || content.length < 20) {
       toast({
@@ -28,6 +29,8 @@ const SmsSubmissionForm = ({ phoneNumber }: SmsSubmissionFormProps) => {
     }
 
     setIsLoading(true);
+    console.log('شروع ارسال پیامک...', { phoneNumber, contentLength: content.length });
+    
     try {
       // ایجاد کاربر مهمان برای ارسال از طریق پیامک
       const guestTitle = `ارسال پیامکی - ${phoneNumber}`;
@@ -41,7 +44,12 @@ const SmsSubmissionForm = ({ phoneNumber }: SmsSubmissionFormProps) => {
           status: 'pending'
         });
 
-      if (error) throw error;
+      if (error) {
+        console.error('خطا در ارسال پیامک:', error);
+        throw error;
+      }
+
+      console.log('پیامک با موفقیت ارسال شد');
 
       toast({
         title: 'موفقیت',
@@ -82,7 +90,7 @@ const SmsSubmissionForm = ({ phoneNumber }: SmsSubmissionFormProps) => {
               value={content}
               onChange={(e) => setContent(e.target.value)}
               placeholder="ایده یا خلاصه مقاله خود را بنویسید..."
-              className="min-h-[150px] bg-space-dark-blue/50 border-space-stellar/30"
+              className="min-h-[150px] bg-space-dark-blue/50 border-space-stellar/30 focus:border-space-cosmic-purple"
               maxLength={1000}
             />
             <p className="text-xs text-space-stellar/60 mt-1">
@@ -92,11 +100,12 @@ const SmsSubmissionForm = ({ phoneNumber }: SmsSubmissionFormProps) => {
           
           <Button
             type="submit"
-            disabled={isLoading}
-            className="w-full cosmic-button"
+            disabled={isLoading || content.length < 20}
+            className="w-full cosmic-button pointer-events-auto"
+            style={{ pointerEvents: 'auto' }}
           >
             <Send className="h-4 w-4 mr-2" />
-            ارسال ایده
+            {isLoading ? 'در حال ارسال...' : 'ارسال ایده'}
           </Button>
         </form>
       </CardContent>
