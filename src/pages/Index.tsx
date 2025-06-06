@@ -8,7 +8,7 @@ import Members from '../components/Members';
 import Contact from '../components/Contact';
 import Footer from '../components/Footer';
 
-const Index = () => {
+const Index: React.FC = () => {
   return (
     <div className="min-h-screen bg-space-gradient bg-fixed">
       <Navbar />

@@ -1,8 +1,7 @@
 
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useAuth } from '@/hooks/useAuth';
 import { useNavigate } from 'react-router-dom';
-import { useEffect } from 'react';
 import Navbar from '@/components/Navbar';
 import Footer from '@/components/Footer';
 import SubmissionForm from '@/components/SubmissionForm';
@@ -11,7 +10,7 @@ import SmsSubmissionForm from '@/components/SmsSubmissionForm';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { FileText, MessageSquare } from 'lucide-react';
 
-const SubmissionsPage = () => {
+const SubmissionsPage: React.FC = () => {
   const { user, loading } = useAuth();
   const navigate = useNavigate();
   const [verifiedPhone, setVerifiedPhone] = useState<string>('');
