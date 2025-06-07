@@ -18,10 +18,8 @@ const Contact = () => {
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    // In a real app, this would send the data to a server
     console.log('Form submitted:', formData);
     toast.success('از پیام شما متشکریم! به زودی با شما تماس خواهیم گرفت.');
-    // Reset form
     setFormData({
       name: '',
       email: '',
@@ -32,7 +30,6 @@ const Contact = () => {
 
   return (
     <section id="contact" className="py-20 bg-space-deep-blue/30 relative">
-      {/* Background accent */}
       <div className="absolute top-0 left-1/2 -translate-x-1/2 w-full max-w-4xl h-1/2 bg-space-stellar opacity-5 rounded-full blur-3xl"></div>
       
       <div className="container mx-auto px-6">
@@ -88,7 +85,7 @@ const Contact = () => {
                     name="name"
                     value={formData.name}
                     onChange={handleChange}
-                    className="w-full px-4 py-3 bg-space-dark-blue/50 border border-space-stellar/30 rounded-lg focus:outline-none focus:ring-2 focus:ring-space-stellar"
+                    className="w-full px-4 py-3 bg-space-dark-blue/50 border border-space-stellar/30 rounded-lg focus:outline-none focus:ring-2 focus:ring-space-stellar text-white"
                     required
                   />
                 </div>
@@ -101,7 +98,7 @@ const Contact = () => {
                     name="email"
                     value={formData.email}
                     onChange={handleChange}
-                    className="w-full px-4 py-3 bg-space-dark-blue/50 border border-space-stellar/30 rounded-lg focus:outline-none focus:ring-2 focus:ring-space-stellar"
+                    className="w-full px-4 py-3 bg-space-dark-blue/50 border border-space-stellar/30 rounded-lg focus:outline-none focus:ring-2 focus:ring-space-stellar text-white"
                     required
                   />
                 </div>
@@ -113,13 +110,13 @@ const Contact = () => {
                     name="interest"
                     value={formData.interest}
                     onChange={handleChange}
-                    className="w-full px-4 py-3 bg-space-dark-blue/50 border border-space-stellar/30 rounded-lg focus:outline-none focus:ring-2 focus:ring-space-stellar"
+                    className="w-full px-4 py-3 bg-space-dark-blue/50 border border-space-stellar/30 rounded-lg focus:outline-none focus:ring-2 focus:ring-space-stellar text-white"
                   >
-                    <option>سؤال عمومی</option>
-                    <option>عضویت</option>
-                    <option>داوطلبی</option>
-                    <option>سخنرانی در رویداد</option>
-                    <option>فرصت‌های حمایت مالی</option>
+                    <option value="سؤال عمومی">سؤال عمومی</option>
+                    <option value="عضویت">عضویت</option>
+                    <option value="داوطلبی">داوطلبی</option>
+                    <option value="سخنرانی در رویداد">سخنرانی در رویداد</option>
+                    <option value="فرصت‌های حمایت مالی">فرصت‌های حمایت مالی</option>
                   </select>
                 </div>
                 
@@ -131,9 +128,9 @@ const Contact = () => {
                     value={formData.message}
                     onChange={handleChange}
                     rows={4}
-                    className="w-full px-4 py-3 bg-space-dark-blue/50 border border-space-stellar/30 rounded-lg focus:outline-none focus:ring-2 focus:ring-space-stellar"
+                    className="w-full px-4 py-3 bg-space-dark-blue/50 border border-space-stellar/30 rounded-lg focus:outline-none focus:ring-2 focus:ring-space-stellar text-white"
                     required
-                  ></textarea>
+                  />
                 </div>
                 
                 <button type="submit" className="cosmic-button flex items-center justify-center w-full">

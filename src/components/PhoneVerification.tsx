@@ -44,8 +44,6 @@ const PhoneVerification = ({ onVerified }: PhoneVerificationProps) => {
 
       if (error) throw error;
 
-      // در محیط واقعی، اینجا کد پیامک ارسال می‌شود
-      // برای تست، کد را در کنسول نمایش می‌دهیم
       console.log(`کد تأیید برای شماره ${phoneNumber}: ${code}`);
       
       setIsCodeSent(true);
@@ -77,7 +75,6 @@ const PhoneVerification = ({ onVerified }: PhoneVerificationProps) => {
 
     setIsLoading(true);
     try {
-      // بررسی کد تأیید
       const { data, error } = await supabase
         .from('verified_phones')
         .select('*')
@@ -94,7 +91,6 @@ const PhoneVerification = ({ onVerified }: PhoneVerificationProps) => {
         return;
       }
 
-      // تأیید شماره تلفن
       const { error: updateError } = await supabase
         .from('verified_phones')
         .update({
@@ -134,7 +130,7 @@ const PhoneVerification = ({ onVerified }: PhoneVerificationProps) => {
           برای ارسال مقاله از طریق پیامک، ابتدا شماره تلفن خود را تأیید کنید
         </CardDescription>
       </CardHeader>
-      <CardContent className="space-y-4" style={{ pointerEvents: 'auto' }}>
+      <CardContent className="space-y-4">
         {!isCodeSent ? (
           <>
             <div>
@@ -148,14 +144,12 @@ const PhoneVerification = ({ onVerified }: PhoneVerificationProps) => {
                 onChange={(e) => setPhoneNumber(e.target.value)}
                 className="bg-space-dark-blue/50 border-space-stellar/30"
                 dir="ltr"
-                style={{ pointerEvents: 'auto', zIndex: 10 }}
               />
             </div>
             <Button
               onClick={sendVerificationCode}
               disabled={isLoading}
               className="w-full cosmic-button"
-              style={{ pointerEvents: 'auto', zIndex: 10 }}
             >
               <MessageSquare className="h-4 w-4 mr-2" />
               ارسال کد تأیید
@@ -189,7 +183,6 @@ const PhoneVerification = ({ onVerified }: PhoneVerificationProps) => {
                 onClick={verifyCode}
                 disabled={isLoading}
                 className="flex-1 cosmic-button"
-                style={{ pointerEvents: 'auto', zIndex: 10 }}
               >
                 <Check className="h-4 w-4 mr-2" />
                 تأیید کد
@@ -198,7 +191,6 @@ const PhoneVerification = ({ onVerified }: PhoneVerificationProps) => {
                 onClick={() => setIsCodeSent(false)}
                 variant="outline"
                 className="flex-1"
-                style={{ pointerEvents: 'auto', zIndex: 10 }}
               >
                 تغییر شماره
               </Button>

@@ -13,7 +13,6 @@ const Input = React.forwardRef<HTMLInputElement, React.ComponentProps<"input">>(
           className
         )}
         ref={ref}
-        style={{ pointerEvents: 'auto', zIndex: 1 }}
         {...props}
       />
     )

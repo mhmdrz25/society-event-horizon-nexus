@@ -15,7 +15,6 @@ const Textarea = React.forwardRef<HTMLTextAreaElement, TextareaProps>(
           className
         )}
         ref={ref}
-        style={{ pointerEvents: 'auto', zIndex: 1 }}
         {...props}
       />
     )

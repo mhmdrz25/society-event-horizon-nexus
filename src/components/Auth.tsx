@@ -18,7 +18,6 @@ const Auth = () => {
 
   const handleSignUp = async (e: React.FormEvent) => {
     e.preventDefault();
-    e.stopPropagation();
     setLoading(true);
     
     const { error } = await signUp(email, password, name);
@@ -41,7 +40,6 @@ const Auth = () => {
 
   const handleSignIn = async (e: React.FormEvent) => {
     e.preventDefault();
-    e.stopPropagation();
     setLoading(true);
     
     const { error } = await signIn(email, password);
@@ -63,7 +61,7 @@ const Auth = () => {
   };
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-space-dark py-12 px-4 sm:px-6 lg:px-8" style={{ pointerEvents: 'auto' }}>
+    <div className="min-h-screen flex items-center justify-center bg-space-dark py-12 px-4 sm:px-6 lg:px-8">
       <Card className="w-full max-w-md nebula-card">
         <CardHeader className="text-center">
           <CardTitle className="text-2xl cosmic-glow">انجمن افق رویداد</CardTitle>
@@ -71,7 +69,7 @@ const Auth = () => {
             به جامعه کاوشگران کیهان بپیوندید
           </CardDescription>
         </CardHeader>
-        <CardContent style={{ pointerEvents: 'auto' }}>
+        <CardContent>
           <Tabs defaultValue="signin" className="w-full">
             <TabsList className="grid w-full grid-cols-2">
               <TabsTrigger value="signin">ورود</TabsTrigger>
@@ -79,7 +77,7 @@ const Auth = () => {
             </TabsList>
             
             <TabsContent value="signin">
-              <form onSubmit={handleSignIn} className="space-y-4" style={{ pointerEvents: 'auto' }}>
+              <form onSubmit={handleSignIn} className="space-y-4">
                 <div>
                   <Label htmlFor="email">ایمیل</Label>
                   <Input
@@ -88,7 +86,7 @@ const Auth = () => {
                     value={email}
                     onChange={(e) => setEmail(e.target.value)}
                     required
-                    style={{ pointerEvents: 'auto', zIndex: 10 }}
+                    className="bg-space-dark-blue/50 border-space-stellar/30"
                   />
                 </div>
                 <div>
@@ -99,14 +97,13 @@ const Auth = () => {
                     value={password}
                     onChange={(e) => setPassword(e.target.value)}
                     required
-                    style={{ pointerEvents: 'auto', zIndex: 10 }}
+                    className="bg-space-dark-blue/50 border-space-stellar/30"
                   />
                 </div>
                 <Button 
                   type="submit" 
                   className="w-full cosmic-button" 
                   disabled={loading}
-                  style={{ pointerEvents: 'auto', zIndex: 10 }}
                 >
                   {loading ? 'در حال ورود...' : 'ورود'}
                 </Button>
@@ -114,7 +111,7 @@ const Auth = () => {
             </TabsContent>
             
             <TabsContent value="signup">
-              <form onSubmit={handleSignUp} className="space-y-4" style={{ pointerEvents: 'auto' }}>
+              <form onSubmit={handleSignUp} className="space-y-4">
                 <div>
                   <Label htmlFor="name">نام و نام خانوادگی</Label>
                   <Input
@@ -123,7 +120,7 @@ const Auth = () => {
                     value={name}
                     onChange={(e) => setName(e.target.value)}
                     required
-                    style={{ pointerEvents: 'auto', zIndex: 10 }}
+                    className="bg-space-dark-blue/50 border-space-stellar/30"
                   />
                 </div>
                 <div>
@@ -134,7 +131,7 @@ const Auth = () => {
                     value={email}
                     onChange={(e) => setEmail(e.target.value)}
                     required
-                    style={{ pointerEvents: 'auto', zIndex: 10 }}
+                    className="bg-space-dark-blue/50 border-space-stellar/30"
                   />
                 </div>
                 <div>
@@ -145,14 +142,13 @@ const Auth = () => {
                     value={password}
                     onChange={(e) => setPassword(e.target.value)}
                     required
-                    style={{ pointerEvents: 'auto', zIndex: 10 }}
+                    className="bg-space-dark-blue/50 border-space-stellar/30"
                   />
                 </div>
                 <Button 
                   type="submit" 
                   className="w-full cosmic-button" 
                   disabled={loading}
-                  style={{ pointerEvents: 'auto', zIndex: 10 }}
                 >
                   {loading ? 'در حال ثبت‌نام...' : 'ثبت‌نام'}
                 </Button>
