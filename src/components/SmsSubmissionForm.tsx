@@ -80,8 +80,8 @@ const SmsSubmissionForm = ({ phoneNumber }: SmsSubmissionFormProps) => {
           شماره تأیید شده: {phoneNumber}
         </CardDescription>
       </CardHeader>
-      <CardContent>
-        <form onSubmit={handleSubmit} className="space-y-4">
+      <CardContent style={{ pointerEvents: 'auto' }}>
+        <form onSubmit={handleSubmit} className="space-y-4" style={{ pointerEvents: 'auto' }}>
           <div>
             <label className="block text-sm font-medium mb-2">
               محتوای ایده یا مقاله
@@ -92,6 +92,7 @@ const SmsSubmissionForm = ({ phoneNumber }: SmsSubmissionFormProps) => {
               placeholder="ایده یا خلاصه مقاله خود را بنویسید..."
               className="min-h-[150px] bg-space-dark-blue/50 border-space-stellar/30 focus:border-space-cosmic-purple"
               maxLength={1000}
+              style={{ pointerEvents: 'auto', zIndex: 10 }}
             />
             <p className="text-xs text-space-stellar/60 mt-1">
               {content.length}/1000 کاراکتر
@@ -101,8 +102,8 @@ const SmsSubmissionForm = ({ phoneNumber }: SmsSubmissionFormProps) => {
           <Button
             type="submit"
             disabled={isLoading || content.length < 20}
-            className="w-full cosmic-button pointer-events-auto"
-            style={{ pointerEvents: 'auto' }}
+            className="w-full cosmic-button"
+            style={{ pointerEvents: 'auto', zIndex: 10 }}
           >
             <Send className="h-4 w-4 mr-2" />
             {isLoading ? 'در حال ارسال...' : 'ارسال ایده'}
