@@ -102,7 +102,7 @@ const SmsSubmissionForm = ({ phoneNumber }: SmsSubmissionFormProps) => {
             className="w-full cosmic-button"
           >
             <Send className="h-4 w-4 mr-2" />
-            {isLoading ? 'در حال ارسال...' : 'ارسال ایده'}
+            {isLoading ? 'در حال ارسال...' : 'ارسال مقاله'}
           </Button>
         </form>
       </CardContent>

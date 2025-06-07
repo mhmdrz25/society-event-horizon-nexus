@@ -1,5 +1,5 @@
 
-import React, { useState } from 'react';
+import React, { useState, useRef } from 'react';
 import { useAuth } from '@/hooks/useAuth';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -24,6 +24,7 @@ const SubmissionForm = () => {
   const [isLoading, setIsLoading] = useState(false);
   const [selectedFile, setSelectedFile] = useState<File | null>(null);
   const [dragActive, setDragActive] = useState(false);
+  const fileInputRef = useRef<HTMLInputElement>(null);
 
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
@@ -50,6 +51,14 @@ const SubmissionForm = () => {
           variant: 'destructive',
         });
       }
+    }
+  };
+
+  const handleFileButtonClick = (e: React.MouseEvent) => {
+    e.preventDefault();
+    e.stopPropagation();
+    if (fileInputRef.current) {
+      fileInputRef.current.click();
     }
   };
 
@@ -274,10 +283,11 @@ const SubmissionForm = () => {
                 onDrop={handleDrop}
               >
                 <input
+                  ref={fileInputRef}
                   type="file"
                   accept=".pdf"
                   onChange={handleFileChange}
-                  className="absolute inset-0 w-full h-full opacity-0 cursor-pointer z-20"
+                  className="hidden"
                   id="file-upload"
                 />
                 
@@ -303,7 +313,10 @@ const SubmissionForm = () => {
                     </Button>
                   </div>
                 ) : (
-                  <div className="cursor-pointer flex flex-col items-center gap-2">
+                  <div 
+                    className="cursor-pointer flex flex-col items-center gap-2"
+                    onClick={handleFileButtonClick}
+                  >
                     <Upload className="h-8 w-8 text-space-cosmic-purple" />
                     <span className="text-sm">
                       فایل PDF خود را انتخاب کنید یا اینجا بکشید
@@ -319,8 +332,7 @@ const SubmissionForm = () => {
             <Button
               type="submit"
               disabled={isLoading}
-              className="w-full cosmic-button relative z-30"
-              style={{ pointerEvents: 'auto' }}
+              className="w-full cosmic-button"
             >
               {isLoading ? (
                 <>
