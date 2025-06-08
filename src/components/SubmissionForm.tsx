@@ -1,3 +1,4 @@
+
 import React, { useState, useRef } from 'react';
 import { useAuth } from '@/hooks/useAuth';
 import { Button } from '@/components/ui/button';
@@ -53,9 +54,7 @@ const SubmissionForm = () => {
     }
   };
 
-  const handleFileButtonClick = (e: React.MouseEvent) => {
-    e.preventDefault();
-    e.stopPropagation();
+  const handleFileButtonClick = () => {
     if (fileInputRef.current) {
       fileInputRef.current.click();
     }
@@ -96,9 +95,7 @@ const SubmissionForm = () => {
     }
   };
 
-  const removeFile = (e: React.MouseEvent) => {
-    e.preventDefault();
-    e.stopPropagation();
+  const removeFile = () => {
     setSelectedFile(null);
     form.setValue('file', undefined);
   };
@@ -123,7 +120,6 @@ const SubmissionForm = () => {
     try {
       console.log('ایجاد submission در پایگاه داده...');
       
-      // ایجاد رکورد ارسال در پایگاه داده
       const { data: submission, error: submissionError } = await supabase
         .from('submissions')
         .insert({
@@ -142,7 +138,6 @@ const SubmissionForm = () => {
 
       console.log('submission با موفقیت ایجاد شد:', submission);
 
-      // آپلود فایل در صورت انتخاب
       if (selectedFile && submission) {
         console.log('شروع آپلود فایل...', selectedFile.name);
         const fileName = `${user.id}/${submission.id}/${selectedFile.name}`;
@@ -161,7 +156,6 @@ const SubmissionForm = () => {
 
         console.log('فایل با موفقیت آپلود شد، ذخیره اطلاعات در پایگاه داده...');
 
-        // ذخیره اطلاعات فایل در پایگاه داده
         const { error: fileError } = await supabase
           .from('submission_files')
           .insert({
@@ -195,7 +189,6 @@ const SubmissionForm = () => {
     } catch (error) {
       console.error('خطا در ارسال مقاله:', error);
       
-      // نمایش جزئیات بیشتر خطا
       let errorMessage = 'خطا در ارسال مقاله. لطفاً دوباره تلاش کنید';
       
       if (error && typeof error === 'object' && 'message' in error) {
@@ -225,10 +218,7 @@ const SubmissionForm = () => {
           <div className="text-center space-y-4">
             <p>برای ارسال مقاله ابتدا وارد شوید</p>
             <Button 
-              onClick={(e) => {
-                e.preventDefault();
-                window.location.href = '/auth';
-              }}
+              onClick={() => window.location.href = '/auth'}
               className="cosmic-button"
             >
               ورود / ثبت‌نام
