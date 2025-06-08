@@ -33,6 +33,10 @@ const SubmissionsPage: React.FC = () => {
     setVerifiedPhone(phoneNumber);
   };
 
+  const resetPhoneVerification = () => {
+    setVerifiedPhone('');
+  };
+
   return (
     <div className="min-h-screen bg-space-dark text-space-stellar">
       <Navbar />
@@ -67,7 +71,17 @@ const SubmissionsPage: React.FC = () => {
               {!verifiedPhone ? (
                 <PhoneVerification onVerified={handlePhoneVerified} />
               ) : (
-                <SmsSubmissionForm phoneNumber={verifiedPhone} />
+                <div className="space-y-4">
+                  <SmsSubmissionForm phoneNumber={verifiedPhone} />
+                  <div className="text-center">
+                    <button
+                      onClick={resetPhoneVerification}
+                      className="text-space-stellar/60 hover:text-space-stellar text-sm underline"
+                    >
+                      تغییر شماره تلفن
+                    </button>
+                  </div>
+                </div>
               )}
             </TabsContent>
           </Tabs>

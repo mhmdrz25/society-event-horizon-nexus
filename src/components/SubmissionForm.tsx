@@ -202,6 +202,8 @@ const SubmissionForm = () => {
         console.error('جزئیات خطا:', error);
         if (error.message?.includes('row-level security')) {
           errorMessage = 'مشکل در دسترسی پایگاه داده. لطفاً دوباره وارد شوید';
+        } else if (error.message?.includes('permission')) {
+          errorMessage = 'عدم دسترسی کافی. لطفاً دوباره وارد شوید';
         }
       }
       
