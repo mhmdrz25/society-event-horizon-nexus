@@ -17,6 +17,7 @@ const PhoneVerification = ({ onVerified }: PhoneVerificationProps) => {
   const [verificationCode, setVerificationCode] = useState('');
   const [isCodeSent, setIsCodeSent] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
+  const [currentCode, setCurrentCode] = useState(''); // برای نمایش کد تولید شده
 
   const sendVerificationCode = async () => {
     if (!phoneNumber || phoneNumber.length < 11) {
@@ -29,27 +30,36 @@ const PhoneVerification = ({ onVerified }: PhoneVerificationProps) => {
     }
 
     setIsLoading(true);
+    console.log('شروع ارسال کد تأیید برای شماره:', phoneNumber);
+    
     try {
       // تولید کد تصادفی ۶ رقمی
       const code = Math.floor(100000 + Math.random() * 900000).toString();
+      setCurrentCode(code); // ذخیره کد برای نمایش
       
-      // ذخیره کد در پایگاه داده
+      // استفاده از upsert برای به‌روزرسانی یا ایجاد رکورد جدید
       const { error } = await supabase
         .from('verified_phones')
         .upsert({
           phone_number: phoneNumber,
           verification_code: code,
-          is_verified: false
+          is_verified: false,
+          created_at: new Date().toISOString()
+        }, {
+          onConflict: 'phone_number' // در صورت تکراری بودن شماره، رکورد موجود را به‌روزرسانی کن
         });
 
-      if (error) throw error;
+      if (error) {
+        console.error('خطا در ذخیره کد تأیید:', error);
+        throw error;
+      }
 
       console.log(`کد تأیید برای شماره ${phoneNumber}: ${code}`);
       
       setIsCodeSent(true);
       toast({
         title: 'کد ارسال شد',
-        description: `کد تأیید به شماره ${phoneNumber} ارسال شد`,
+        description: `کد تأیید: ${code} (این کد فقط برای تست است - پیامک واقعی ارسال نشده)`,
       });
     } catch (error) {
       console.error('Error sending code:', error);
@@ -74,6 +84,8 @@ const PhoneVerification = ({ onVerified }: PhoneVerificationProps) => {
     }
 
     setIsLoading(true);
+    console.log('تأیید کد:', verificationCode, 'برای شماره:', phoneNumber);
+    
     try {
       const { data, error } = await supabase
         .from('verified_phones')
@@ -83,6 +95,7 @@ const PhoneVerification = ({ onVerified }: PhoneVerificationProps) => {
         .single();
 
       if (error || !data) {
+        console.error('کد تأیید اشتباه یا یافت نشد:', error);
         toast({
           title: 'خطا',
           description: 'کد تأیید اشتباه است',
@@ -99,8 +112,12 @@ const PhoneVerification = ({ onVerified }: PhoneVerificationProps) => {
         })
         .eq('id', data.id);
 
-      if (updateError) throw updateError;
+      if (updateError) {
+        console.error('خطا در به‌روزرسانی وضعیت تأیید:', updateError);
+        throw updateError;
+      }
 
+      console.log('شماره تلفن با موفقیت تأیید شد');
       toast({
         title: 'تأیید شد',
         description: 'شماره تلفن شما تأیید شد',
@@ -117,6 +134,12 @@ const PhoneVerification = ({ onVerified }: PhoneVerificationProps) => {
     } finally {
       setIsLoading(false);
     }
+  };
+
+  const resetForm = () => {
+    setIsCodeSent(false);
+    setVerificationCode('');
+    setCurrentCode('');
   };
 
   return (
@@ -152,11 +175,21 @@ const PhoneVerification = ({ onVerified }: PhoneVerificationProps) => {
               className="w-full cosmic-button"
             >
               <MessageSquare className="h-4 w-4 mr-2" />
-              ارسال کد تأیید
+              {isLoading ? 'در حال ارسال...' : 'ارسال کد تأیید'}
             </Button>
           </>
         ) : (
           <>
+            {currentCode && (
+              <div className="bg-yellow-500/10 border border-yellow-500/30 rounded-lg p-3 mb-4">
+                <p className="text-sm text-yellow-200">
+                  <strong>کد تأیید تست:</strong> {currentCode}
+                </p>
+                <p className="text-xs text-yellow-300 mt-1">
+                  (این کد فقط برای تست است - در حالت واقعی به گوشی شما ارسال می‌شود)
+                </p>
+              </div>
+            )}
             <div>
               <label className="block text-sm font-medium mb-2">
                 کد تأیید ۶ رقمی
@@ -181,16 +214,17 @@ const PhoneVerification = ({ onVerified }: PhoneVerificationProps) => {
             <div className="flex gap-2">
               <Button
                 onClick={verifyCode}
-                disabled={isLoading}
+                disabled={isLoading || verificationCode.length !== 6}
                 className="flex-1 cosmic-button"
               >
                 <Check className="h-4 w-4 mr-2" />
-                تأیید کد
+                {isLoading ? 'در حال تأیید...' : 'تأیید کد'}
               </Button>
               <Button
-                onClick={() => setIsCodeSent(false)}
+                onClick={resetForm}
                 variant="outline"
                 className="flex-1"
+                disabled={isLoading}
               >
                 تغییر شماره
               </Button>

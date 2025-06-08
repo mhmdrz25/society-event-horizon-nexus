@@ -1,4 +1,3 @@
-
 import React, { useState, useRef } from 'react';
 import { useAuth } from '@/hooks/useAuth';
 import { Button } from '@/components/ui/button';
@@ -105,7 +104,12 @@ const SubmissionForm = () => {
   };
 
   const onSubmit = async (values: z.infer<typeof formSchema>) => {
+    console.log('شروع ارسال مقاله...');
+    console.log('کاربر فعلی:', user);
+    console.log('داده‌های فرم:', { title: values.title, contentLength: values.content.length, hasFile: !!selectedFile });
+    
     if (!user) {
+      console.error('کاربر وارد نشده است');
       toast({
         title: 'خطا',
         description: 'برای ارسال مقاله ابتدا وارد شوید',
@@ -115,9 +119,10 @@ const SubmissionForm = () => {
     }
 
     setIsLoading(true);
-    console.log('شروع ارسال مقاله...', { title: values.title, hasFile: !!selectedFile });
     
     try {
+      console.log('ایجاد submission در پایگاه داده...');
+      
       // ایجاد رکورد ارسال در پایگاه داده
       const { data: submission, error: submissionError } = await supabase
         .from('submissions')
@@ -135,7 +140,7 @@ const SubmissionForm = () => {
         throw submissionError;
       }
 
-      console.log('submission ایجاد شد:', submission);
+      console.log('submission با موفقیت ایجاد شد:', submission);
 
       // آپلود فایل در صورت انتخاب
       if (selectedFile && submission) {
@@ -154,7 +159,7 @@ const SubmissionForm = () => {
           throw uploadError;
         }
 
-        console.log('فایل آپلود شد، ذخیره اطلاعات در پایگاه داده...');
+        console.log('فایل با موفقیت آپلود شد، ذخیره اطلاعات در پایگاه داده...');
 
         // ذخیره اطلاعات فایل در پایگاه داده
         const { error: fileError } = await supabase
@@ -173,9 +178,11 @@ const SubmissionForm = () => {
           throw fileError;
         }
 
-        console.log('اطلاعات فایل ذخیره شد');
+        console.log('اطلاعات فایل با موفقیت ذخیره شد');
       }
 
+      console.log('ارسال مقاله با موفقیت کامل شد');
+      
       toast({
         title: 'موفقیت',
         description: 'مقاله شما با موفقیت ارسال شد و در انتظار بررسی است',
@@ -184,11 +191,23 @@ const SubmissionForm = () => {
       form.reset();
       setSelectedFile(null);
       console.log('فرم ریست شد');
+      
     } catch (error) {
-      console.error('Error submitting:', error);
+      console.error('خطا در ارسال مقاله:', error);
+      
+      // نمایش جزئیات بیشتر خطا
+      let errorMessage = 'خطا در ارسال مقاله. لطفاً دوباره تلاش کنید';
+      
+      if (error && typeof error === 'object' && 'message' in error) {
+        console.error('جزئیات خطا:', error);
+        if (error.message?.includes('row-level security')) {
+          errorMessage = 'مشکل در دسترسی پایگاه داده. لطفاً دوباره وارد شوید';
+        }
+      }
+      
       toast({
         title: 'خطا',
-        description: 'خطا در ارسال مقاله. لطفاً دوباره تلاش کنید',
+        description: errorMessage,
         variant: 'destructive',
       });
     } finally {
@@ -197,6 +216,7 @@ const SubmissionForm = () => {
   };
 
   if (!user) {
+    console.log('کاربر وارد نشده است، نمایش دکمه ورود');
     return (
       <Card className="nebula-card">
         <CardContent className="p-6">
