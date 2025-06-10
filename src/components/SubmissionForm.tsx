@@ -11,7 +11,8 @@ import { zodResolver } from '@hookform/resolvers/zod';
 import * as z from 'zod';
 import { supabase } from '@/integrations/supabase/client';
 import { toast } from '@/components/ui/use-toast';
-import { Upload, FileText, Loader2, X } from 'lucide-react';
+import { Upload, FileText, Loader2, X, AlertCircle } from 'lucide-react';
+import { Alert, AlertDescription } from '@/components/ui/alert';
 
 const formSchema = z.object({
   title: z.string().min(5, 'عنوان باید حداقل ۵ کاراکتر باشد'),
@@ -24,6 +25,7 @@ const SubmissionForm = () => {
   const [isLoading, setIsLoading] = useState(false);
   const [selectedFile, setSelectedFile] = useState<File | null>(null);
   const [dragActive, setDragActive] = useState(false);
+  const [duplicateWarning, setDuplicateWarning] = useState<string | null>(null);
   const fileInputRef = useRef<HTMLInputElement>(null);
 
   const form = useForm<z.infer<typeof formSchema>>({
@@ -33,6 +35,41 @@ const SubmissionForm = () => {
       content: '',
     },
   });
+
+  // بررسی ارسال مجدد مقاله
+  const checkDuplicateSubmission = async (title: string) => {
+    if (!user || !title.trim()) return false;
+    
+    try {
+      const { data, error } = await supabase.rpc('check_duplicate_submission', {
+        p_user_id: user.id,
+        p_title: title
+      });
+      
+      if (error) {
+        console.error('خطا در بررسی ارسال مجدد:', error);
+        return false;
+      }
+      
+      return data;
+    } catch (error) {
+      console.error('خطا در فراخوانی تابع بررسی:', error);
+      return false;
+    }
+  };
+
+  // بررسی عنوان هنگام تغییر
+  const handleTitleChange = async (title: string) => {
+    form.setValue('title', title);
+    setDuplicateWarning(null);
+    
+    if (title.trim().length >= 5) {
+      const isDuplicate = await checkDuplicateSubmission(title);
+      if (isDuplicate) {
+        setDuplicateWarning('شما قبلاً مقاله‌ای با این عنوان ارسال کرده‌اید که در حال بررسی است. لطفاً تا پایان فرآیند داوری منتظر بمانید یا عنوان متفاوتی انتخاب کنید.');
+      }
+    }
+  };
 
   const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
@@ -55,9 +92,7 @@ const SubmissionForm = () => {
   };
 
   const handleFileButtonClick = () => {
-    if (fileInputRef.current) {
-      fileInputRef.current.click();
-    }
+    fileInputRef.current?.click();
   };
 
   const handleDrag = (e: React.DragEvent) => {
@@ -103,13 +138,23 @@ const SubmissionForm = () => {
   const onSubmit = async (values: z.infer<typeof formSchema>) => {
     console.log('شروع ارسال مقاله...');
     console.log('کاربر فعلی:', user);
-    console.log('داده‌های فرم:', { title: values.title, contentLength: values.content.length, hasFile: !!selectedFile });
     
     if (!user) {
       console.error('کاربر وارد نشده است');
       toast({
         title: 'خطا',
         description: 'برای ارسال مقاله ابتدا وارد شوید',
+        variant: 'destructive',
+      });
+      return;
+    }
+
+    // بررسی مجدد قبل از ارسال
+    const isDuplicate = await checkDuplicateSubmission(values.title);
+    if (isDuplicate) {
+      toast({
+        title: 'خطا',
+        description: 'شما قبلاً مقاله‌ای با این عنوان ارسال کرده‌اید که در حال بررسی است',
         variant: 'destructive',
       });
       return;
@@ -184,6 +229,7 @@ const SubmissionForm = () => {
 
       form.reset();
       setSelectedFile(null);
+      setDuplicateWarning(null);
       console.log('فرم ریست شد');
       
     } catch (error) {
@@ -211,7 +257,6 @@ const SubmissionForm = () => {
   };
 
   if (!user) {
-    console.log('کاربر وارد نشده است، نمایش دکمه ورود');
     return (
       <Card className="nebula-card">
         <CardContent className="p-6">
@@ -253,10 +298,19 @@ const SubmissionForm = () => {
                     <Input
                       placeholder="عنوان مقاله خود را وارد کنید"
                       {...field}
+                      onChange={(e) => handleTitleChange(e.target.value)}
                       className="bg-space-dark-blue/50 border-space-stellar/30 focus:border-space-cosmic-purple"
                     />
                   </FormControl>
                   <FormMessage />
+                  {duplicateWarning && (
+                    <Alert className="mt-2 border-yellow-500 bg-yellow-50">
+                      <AlertCircle className="h-4 w-4 text-yellow-600" />
+                      <AlertDescription className="text-yellow-800">
+                        {duplicateWarning}
+                      </AlertDescription>
+                    </Alert>
+                  )}
                 </FormItem>
               )}
             />
@@ -343,8 +397,8 @@ const SubmissionForm = () => {
 
             <Button
               type="submit"
-              disabled={isLoading}
-              className="w-full cosmic-button"
+              disabled={isLoading || !!duplicateWarning}
+              className="w-full cosmic-button disabled:opacity-50"
             >
               {isLoading ? (
                 <>

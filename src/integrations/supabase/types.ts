@@ -239,6 +239,7 @@ export type Database = {
       }
       submissions: {
         Row: {
+          abstract: string | null
           content: string
           id: string
           status: Database["public"]["Enums"]["submission_status"]
@@ -247,6 +248,7 @@ export type Database = {
           user_id: string
         }
         Insert: {
+          abstract?: string | null
           content: string
           id?: string
           status?: Database["public"]["Enums"]["submission_status"]
@@ -255,6 +257,7 @@ export type Database = {
           user_id: string
         }
         Update: {
+          abstract?: string | null
           content?: string
           id?: string
           status?: Database["public"]["Enums"]["submission_status"]
@@ -331,6 +334,10 @@ export type Database = {
       [_ in never]: never
     }
     Functions: {
+      check_duplicate_submission: {
+        Args: { p_user_id: string; p_title: string }
+        Returns: boolean
+      }
       get_user_role: {
         Args: Record<PropertyKey, never>
         Returns: Database["public"]["Enums"]["user_role"]

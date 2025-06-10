@@ -7,56 +7,145 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
+import { Alert, AlertDescription } from '@/components/ui/alert';
+import { AlertCircle, Loader2 } from 'lucide-react';
 
 const Auth = () => {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [name, setName] = useState('');
   const [loading, setLoading] = useState(false);
+  const [errors, setErrors] = useState<{[key: string]: string}>({});
   const { signUp, signIn } = useAuth();
+
+  const validateForm = (isSignUp: boolean = false) => {
+    const newErrors: {[key: string]: string} = {};
+    
+    if (!email.trim()) {
+      newErrors.email = 'ایمیل الزامی است';
+    } else if (!/\S+@\S+\.\S+/.test(email)) {
+      newErrors.email = 'فرمت ایمیل صحیح نیست';
+    }
+    
+    if (!password.trim()) {
+      newErrors.password = 'رمز عبور الزامی است';
+    } else if (password.length < 6) {
+      newErrors.password = 'رمز عبور باید حداقل ۶ کاراکتر باشد';
+    }
+    
+    if (isSignUp && !name.trim()) {
+      newErrors.name = 'نام و نام خانوادگی الزامی است';
+    }
+    
+    setErrors(newErrors);
+    return Object.keys(newErrors).length === 0;
+  };
 
   const handleSignUp = async (e: React.FormEvent) => {
     e.preventDefault();
+    
+    if (!validateForm(true)) {
+      return;
+    }
+
     setLoading(true);
+    setErrors({});
     
-    const { error } = await signUp(email, password, name);
-    
-    if (error) {
+    try {
+      const { error } = await signUp(email.trim(), password, name.trim());
+      
+      if (error) {
+        console.error('خطا در ثبت‌نام:', error);
+        
+        let errorMessage = 'خطا در ثبت‌نام';
+        
+        if (error.message?.includes('User already registered')) {
+          errorMessage = 'این ایمیل قبلاً ثبت شده است';
+        } else if (error.message?.includes('Invalid email')) {
+          errorMessage = 'فرمت ایمیل صحیح نیست';
+        } else if (error.message?.includes('Password should be at least')) {
+          errorMessage = 'رمز عبور باید حداقل ۶ کاراکتر باشد';
+        } else {
+          errorMessage = error.message || 'خطا در ثبت‌نام';
+        }
+        
+        toast({
+          title: "خطا در ثبت‌نام",
+          description: errorMessage,
+          variant: "destructive"
+        });
+      } else {
+        toast({
+          title: "ثبت‌نام موفق",
+          description: "ثبت‌نام با موفقیت انجام شد. در حال ورود به سیستم..."
+        });
+        
+        // Reset form
+        setEmail('');
+        setPassword('');
+        setName('');
+      }
+    } catch (error) {
+      console.error('خطای غیرمنتظره در ثبت‌نام:', error);
       toast({
-        title: "خطا در ثبت‌نام",
-        description: error.message,
+        title: "خطا",
+        description: "خطای غیرمنتظره در ثبت‌نام",
         variant: "destructive"
       });
-    } else {
-      toast({
-        title: "ثبت‌نام موفق",
-        description: "لطفاً ایمیل خود را بررسی کنید"
-      });
+    } finally {
+      setLoading(false);
     }
-    
-    setLoading(false);
   };
 
   const handleSignIn = async (e: React.FormEvent) => {
     e.preventDefault();
+    
+    if (!validateForm(false)) {
+      return;
+    }
+
     setLoading(true);
+    setErrors({});
     
-    const { error } = await signIn(email, password);
-    
-    if (error) {
+    try {
+      const { error } = await signIn(email.trim(), password);
+      
+      if (error) {
+        console.error('خطا در ورود:', error);
+        
+        let errorMessage = 'خطا در ورود';
+        
+        if (error.message?.includes('Invalid login credentials')) {
+          errorMessage = 'ایمیل یا رمز عبور اشتباه است';
+        } else if (error.message?.includes('Email not confirmed')) {
+          errorMessage = 'لطفاً ابتدا ایمیل خود را تأیید کنید';
+        } else if (error.message?.includes('Too many requests')) {
+          errorMessage = 'تعداد تلاش‌های ورود بیش از حد. لطفاً کمی بعد تلاش کنید';
+        } else {
+          errorMessage = error.message || 'خطا در ورود';
+        }
+        
+        toast({
+          title: "خطا در ورود",
+          description: errorMessage,
+          variant: "destructive"
+        });
+      } else {
+        toast({
+          title: "ورود موفق",
+          description: "با موفقیت وارد شدید!"
+        });
+      }
+    } catch (error) {
+      console.error('خطای غیرمنتظره در ورود:', error);
       toast({
-        title: "خطا در ورود",
-        description: error.message,
+        title: "خطا",
+        description: "خطای غیرمنتظره در ورود",
         variant: "destructive"
       });
-    } else {
-      toast({
-        title: "ورود موفق",
-        description: "خوش آمدید!"
-      });
+    } finally {
+      setLoading(false);
     }
-    
-    setLoading(false);
   };
 
   return (
@@ -86,7 +175,11 @@ const Auth = () => {
                     onChange={(e) => setEmail(e.target.value)}
                     required
                     className="bg-space-dark-blue/50 border-space-stellar/30"
+                    disabled={loading}
                   />
+                  {errors.email && (
+                    <p className="text-sm text-red-500 mt-1">{errors.email}</p>
+                  )}
                 </div>
                 <div>
                   <Label htmlFor="password">رمز عبور</Label>
@@ -97,14 +190,25 @@ const Auth = () => {
                     onChange={(e) => setPassword(e.target.value)}
                     required
                     className="bg-space-dark-blue/50 border-space-stellar/30"
+                    disabled={loading}
                   />
+                  {errors.password && (
+                    <p className="text-sm text-red-500 mt-1">{errors.password}</p>
+                  )}
                 </div>
                 <Button 
                   type="submit" 
                   className="w-full cosmic-button" 
                   disabled={loading}
                 >
-                  {loading ? 'در حال ورود...' : 'ورود'}
+                  {loading ? (
+                    <>
+                      <Loader2 className="h-4 w-4 animate-spin mr-2" />
+                      در حال ورود...
+                    </>
+                  ) : (
+                    'ورود'
+                  )}
                 </Button>
               </form>
             </TabsContent>
@@ -120,7 +224,11 @@ const Auth = () => {
                     onChange={(e) => setName(e.target.value)}
                     required
                     className="bg-space-dark-blue/50 border-space-stellar/30"
+                    disabled={loading}
                   />
+                  {errors.name && (
+                    <p className="text-sm text-red-500 mt-1">{errors.name}</p>
+                  )}
                 </div>
                 <div>
                   <Label htmlFor="signup-email">ایمیل</Label>
@@ -131,7 +239,11 @@ const Auth = () => {
                     onChange={(e) => setEmail(e.target.value)}
                     required
                     className="bg-space-dark-blue/50 border-space-stellar/30"
+                    disabled={loading}
                   />
+                  {errors.email && (
+                    <p className="text-sm text-red-500 mt-1">{errors.email}</p>
+                  )}
                 </div>
                 <div>
                   <Label htmlFor="signup-password">رمز عبور</Label>
@@ -142,14 +254,25 @@ const Auth = () => {
                     onChange={(e) => setPassword(e.target.value)}
                     required
                     className="bg-space-dark-blue/50 border-space-stellar/30"
+                    disabled={loading}
                   />
+                  {errors.password && (
+                    <p className="text-sm text-red-500 mt-1">{errors.password}</p>
+                  )}
                 </div>
                 <Button 
                   type="submit" 
                   className="w-full cosmic-button" 
                   disabled={loading}
                 >
-                  {loading ? 'در حال ثبت‌نام...' : 'ثبت‌نام'}
+                  {loading ? (
+                    <>
+                      <Loader2 className="h-4 w-4 animate-spin mr-2" />
+                      در حال ثبت‌نام...
+                    </>
+                  ) : (
+                    'ثبت‌نام'
+                  )}
                 </Button>
               </form>
             </TabsContent>
