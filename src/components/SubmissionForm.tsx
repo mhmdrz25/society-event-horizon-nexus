@@ -1,3 +1,4 @@
+
 import React, { useState, useRef, useEffect } from 'react';
 import { useAuth } from '@/hooks/useAuth';
 import { Button } from '@/components/ui/button';
@@ -519,5 +520,3 @@ const SubmissionForm = () => {
 };
 
 export default SubmissionForm;
-
-</edits_to_apply>
