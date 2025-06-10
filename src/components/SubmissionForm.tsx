@@ -1,5 +1,4 @@
-
-import React, { useState, useRef } from 'react';
+import React, { useState, useRef, useEffect } from 'react';
 import { useAuth } from '@/hooks/useAuth';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -11,7 +10,7 @@ import { zodResolver } from '@hookform/resolvers/zod';
 import * as z from 'zod';
 import { supabase } from '@/integrations/supabase/client';
 import { toast } from '@/components/ui/use-toast';
-import { Upload, FileText, Loader2, X, AlertCircle } from 'lucide-react';
+import { Upload, FileText, Loader2, X, AlertCircle, Clock } from 'lucide-react';
 import { Alert, AlertDescription } from '@/components/ui/alert';
 
 const formSchema = z.object({
@@ -26,6 +25,9 @@ const SubmissionForm = () => {
   const [selectedFile, setSelectedFile] = useState<File | null>(null);
   const [dragActive, setDragActive] = useState(false);
   const [duplicateWarning, setDuplicateWarning] = useState<string | null>(null);
+  const [hasPendingSubmission, setHasPendingSubmission] = useState(false);
+  const [pendingSubmissionCount, setPendingSubmissionCount] = useState(0);
+  const [checkingStatus, setCheckingStatus] = useState(true);
   const fileInputRef = useRef<HTMLInputElement>(null);
 
   const form = useForm<z.infer<typeof formSchema>>({
@@ -35,6 +37,43 @@ const SubmissionForm = () => {
       content: '',
     },
   });
+
+  // بررسی وجود مقالات در حال بررسی کاربر
+  const checkUserPendingSubmissions = async () => {
+    if (!user) return;
+    
+    setCheckingStatus(true);
+    try {
+      const { data, error } = await supabase
+        .from('submissions')
+        .select('id, title, status')
+        .eq('user_id', user.id)
+        .in('status', ['pending', 'under_review', 'revision_required']);
+      
+      if (error) {
+        console.error('خطا در بررسی مقالات در حال بررسی:', error);
+        return;
+      }
+      
+      const pendingCount = data?.length || 0;
+      setPendingSubmissionCount(pendingCount);
+      setHasPendingSubmission(pendingCount > 0);
+      
+      console.log(`کاربر ${pendingCount} مقاله در حال بررسی دارد`);
+      
+    } catch (error) {
+      console.error('خطا در فراخوانی بررسی مقالات:', error);
+    } finally {
+      setCheckingStatus(false);
+    }
+  };
+
+  // بررسی وضعیت هنگام بارگذاری کامپوننت
+  useEffect(() => {
+    if (user) {
+      checkUserPendingSubmissions();
+    }
+  }, [user]);
 
   // بررسی ارسال مجدد مقاله
   const checkDuplicateSubmission = async (title: string) => {
@@ -230,6 +269,10 @@ const SubmissionForm = () => {
       form.reset();
       setSelectedFile(null);
       setDuplicateWarning(null);
+      
+      // بررسی مجدد وضعیت بعد از ارسال موفق
+      await checkUserPendingSubmissions();
+      
       console.log('فرم ریست شد');
       
     } catch (error) {
@@ -269,6 +312,65 @@ const SubmissionForm = () => {
               ورود / ثبت‌نام
             </Button>
           </div>
+        </CardContent>
+      </Card>
+    );
+  }
+
+  if (checkingStatus) {
+    return (
+      <Card className="nebula-card">
+        <CardContent className="p-6">
+          <div className="text-center space-y-4">
+            <Loader2 className="h-8 w-8 animate-spin mx-auto text-space-cosmic-purple" />
+            <p>در حال بررسی وضعیت مقالات شما...</p>
+          </div>
+        </CardContent>
+      </Card>
+    );
+  }
+
+  if (hasPendingSubmission) {
+    return (
+      <Card className="nebula-card">
+        <CardHeader>
+          <CardTitle className="flex items-center gap-2 text-center">
+            <Clock className="h-5 w-5 text-yellow-500" />
+            مقاله در انتظار بررسی
+          </CardTitle>
+        </CardHeader>
+        <CardContent className="text-center space-y-4">
+          <Alert className="border-yellow-500 bg-yellow-50">
+            <AlertCircle className="h-4 w-4 text-yellow-600" />
+            <AlertDescription className="text-yellow-800">
+              شما در حال حاضر {pendingSubmissionCount} مقاله در حال بررسی دارید. 
+              برای ارسال مقاله جدید، لطفاً تا پایان فرآیند داوری مقاله قبلی منتظر بمانید.
+            </AlertDescription>
+          </Alert>
+          
+          <div className="space-y-2">
+            <p className="text-space-stellar">
+              وضعیت مقالات شما:
+            </p>
+            <div className="bg-space-dark-blue/30 p-4 rounded-lg">
+              <p className="text-space-cosmic-purple font-semibold">
+                {pendingSubmissionCount} مقاله در انتظار بررسی
+              </p>
+            </div>
+          </div>
+          
+          <Button
+            onClick={checkUserPendingSubmissions}
+            variant="outline"
+            className="mt-4"
+          >
+            <Loader2 className="h-4 w-4 mr-2" />
+            بررسی مجدد وضعیت
+          </Button>
+          
+          <p className="text-sm text-space-stellar/60 mt-4">
+            زمان بررسی معمولاً ۲-۴ هفته طول می‌کشد
+          </p>
         </CardContent>
       </Card>
     );
@@ -417,3 +519,5 @@ const SubmissionForm = () => {
 };
 
 export default SubmissionForm;
+
+</edits_to_apply>
