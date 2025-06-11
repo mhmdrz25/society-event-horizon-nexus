@@ -61,7 +61,9 @@ export function useAuth() {
         options: {
           data: {
             name: name
-          }
+          },
+          // Don't require email confirmation for free plan
+          emailRedirectTo: undefined
         }
       });
 

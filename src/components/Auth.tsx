@@ -7,7 +7,7 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
-import { Loader2 } from 'lucide-react';
+import { Loader2, AlertCircle } from 'lucide-react';
 
 const Auth = () => {
   const [email, setEmail] = useState('');
@@ -51,7 +51,7 @@ const Auth = () => {
     setErrors({});
     
     try {
-      const { error } = await signUp(email.trim(), password, name.trim());
+      const { error, data } = await signUp(email.trim(), password, name.trim());
       
       if (error) {
         console.error('خطا در ثبت‌نام:', error);
@@ -64,6 +64,8 @@ const Auth = () => {
           errorMessage = 'فرمت ایمیل صحیح نیست';
         } else if (error.message?.includes('Password should be at least')) {
           errorMessage = 'رمز عبور باید حداقل ۶ کاراکتر باشد';
+        } else if (error.message?.includes('Email not confirmed')) {
+          errorMessage = 'لطفاً ایمیل خود را تأیید کنید و سپس وارد شوید';
         } else {
           errorMessage = error.message || 'خطا در ثبت‌نام';
         }
@@ -74,10 +76,18 @@ const Auth = () => {
           variant: "destructive"
         });
       } else {
-        toast({
-          title: "ثبت‌نام موفق",
-          description: "ثبت‌نام با موفقیت انجام شد و وارد شدید!"
-        });
+        // Check if user is immediately signed in (email confirmation disabled)
+        if (data.session) {
+          toast({
+            title: "ثبت‌نام موفق",
+            description: "ثبت‌نام با موفقیت انجام شد و وارد شدید!"
+          });
+        } else {
+          toast({
+            title: "ثبت‌نام موفق",
+            description: "حساب شما ایجاد شد. اکنون می‌توانید وارد شوید."
+          });
+        }
         
         // Reset form
         setEmail('');
@@ -116,6 +126,8 @@ const Auth = () => {
         
         if (error.message?.includes('Invalid login credentials')) {
           errorMessage = 'ایمیل یا رمز عبور اشتباه است';
+        } else if (error.message?.includes('Email not confirmed')) {
+          errorMessage = 'ایمیل شما تأیید نشده است. لطفاً ایمیل خود را بررسی کنید یا مجدداً ثبت‌نام کنید.';
         } else if (error.message?.includes('Too many requests')) {
           errorMessage = 'تعداد تلاش‌های ورود بیش از حد. لطفاً کمی بعد تلاش کنید';
         } else {
@@ -153,6 +165,14 @@ const Auth = () => {
           <CardDescription>
             به جامعه کاوشگران کیهان بپیوندید
           </CardDescription>
+          
+          {/* Email confirmation notice */}
+          <div className="mt-4 p-3 bg-amber-500/20 border border-amber-500/30 rounded-lg flex items-center gap-2 text-sm text-amber-200">
+            <AlertCircle className="h-4 w-4 flex-shrink-0" />
+            <div className="text-right">
+              اگر مشکل تأیید ایمیل دارید، در تنظیمات Supabase گزینه "Confirm email" را خاموش کنید.
+            </div>
+          </div>
         </CardHeader>
         <CardContent>
           <Tabs defaultValue="signin" className="w-full">
