@@ -8,7 +8,7 @@ import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Alert, AlertDescription } from '@/components/ui/alert';
-import { AlertCircle, Loader2 } from 'lucide-react';
+import { AlertCircle, Loader2, Mail } from 'lucide-react';
 
 const Auth = () => {
   const [email, setEmail] = useState('');
@@ -16,6 +16,7 @@ const Auth = () => {
   const [name, setName] = useState('');
   const [loading, setLoading] = useState(false);
   const [errors, setErrors] = useState<{[key: string]: string}>({});
+  const [showEmailConfirmMessage, setShowEmailConfirmMessage] = useState(false);
   const { signUp, signIn } = useAuth();
 
   const validateForm = (isSignUp: boolean = false) => {
@@ -50,9 +51,10 @@ const Auth = () => {
 
     setLoading(true);
     setErrors({});
+    setShowEmailConfirmMessage(false);
     
     try {
-      const { error } = await signUp(email.trim(), password, name.trim());
+      const { error, data } = await signUp(email.trim(), password, name.trim());
       
       if (error) {
         console.error('خطا در ثبت‌نام:', error);
@@ -60,11 +62,13 @@ const Auth = () => {
         let errorMessage = 'خطا در ثبت‌نام';
         
         if (error.message?.includes('User already registered')) {
-          errorMessage = 'این ایمیل قبلاً ثبت شده است';
+          errorMessage = 'این ایمیل قبلاً ثبت شده است. از تب ورود استفاده کنید.';
         } else if (error.message?.includes('Invalid email')) {
           errorMessage = 'فرمت ایمیل صحیح نیست';
         } else if (error.message?.includes('Password should be at least')) {
           errorMessage = 'رمز عبور باید حداقل ۶ کاراکتر باشد';
+        } else if (error.message?.includes('Signup requires a valid password')) {
+          errorMessage = 'رمز عبور معتبر وارد کنید';
         } else {
           errorMessage = error.message || 'خطا در ثبت‌نام';
         }
@@ -75,10 +79,20 @@ const Auth = () => {
           variant: "destructive"
         });
       } else {
-        toast({
-          title: "ثبت‌نام موفق",
-          description: "ثبت‌نام با موفقیت انجام شد. در حال ورود به سیستم..."
-        });
+        // Check if user needs email confirmation
+        if (data?.user && !data.session) {
+          setShowEmailConfirmMessage(true);
+          toast({
+            title: "ثبت‌نام موفق",
+            description: "لطفاً ایمیل خود را بررسی کرده و لینک تأیید را کلیک کنید.",
+            variant: "default"
+          });
+        } else {
+          toast({
+            title: "ثبت‌نام موفق",
+            description: "ثبت‌نام با موفقیت انجام شد. در حال ورود به سیستم..."
+          });
+        }
         
         // Reset form
         setEmail('');
@@ -106,6 +120,7 @@ const Auth = () => {
 
     setLoading(true);
     setErrors({});
+    setShowEmailConfirmMessage(false);
     
     try {
       const { error } = await signIn(email.trim(), password);
@@ -116,11 +131,15 @@ const Auth = () => {
         let errorMessage = 'خطا در ورود';
         
         if (error.message?.includes('Invalid login credentials')) {
-          errorMessage = 'ایمیل یا رمز عبور اشتباه است';
+          errorMessage = 'ایمیل یا رمز عبور اشتباه است. در صورت تازه ثبت‌نام کردن، ابتدا ایمیل خود را تأیید کنید.';
         } else if (error.message?.includes('Email not confirmed')) {
-          errorMessage = 'لطفاً ابتدا ایمیل خود را تأیید کنید';
+          errorMessage = 'لطفاً ابتدا ایمیل خود را تأیید کنید. ایمیل خود را بررسی کرده و روی لینک تأیید کلیک کنید.';
+          setShowEmailConfirmMessage(true);
         } else if (error.message?.includes('Too many requests')) {
           errorMessage = 'تعداد تلاش‌های ورود بیش از حد. لطفاً کمی بعد تلاش کنید';
+        } else if (error.message?.includes('signup requires email confirmation')) {
+          errorMessage = 'ایمیل شما هنوز تأیید نشده است. لطفاً ایمیل خود را بررسی کنید.';
+          setShowEmailConfirmMessage(true);
         } else {
           errorMessage = error.message || 'خطا در ورود';
         }
@@ -158,6 +177,15 @@ const Auth = () => {
           </CardDescription>
         </CardHeader>
         <CardContent>
+          {showEmailConfirmMessage && (
+            <Alert className="mb-4 border-yellow-500 bg-yellow-50 text-yellow-800">
+              <Mail className="h-4 w-4" />
+              <AlertDescription>
+                ایمیل تأیید برای شما ارسال شده است. لطفاً صندوق ورودی (و پوشه spam) خود را بررسی کرده و روی لینک تأیید کلیک کنید تا بتوانید وارد شوید.
+              </AlertDescription>
+            </Alert>
+          )}
+          
           <Tabs defaultValue="signin" className="w-full">
             <TabsList className="grid w-full grid-cols-2">
               <TabsTrigger value="signin">ورود</TabsTrigger>
@@ -176,6 +204,7 @@ const Auth = () => {
                     required
                     className="bg-space-dark-blue/50 border-space-stellar/30"
                     disabled={loading}
+                    placeholder="example@gmail.com"
                   />
                   {errors.email && (
                     <p className="text-sm text-red-500 mt-1">{errors.email}</p>
@@ -191,6 +220,7 @@ const Auth = () => {
                     required
                     className="bg-space-dark-blue/50 border-space-stellar/30"
                     disabled={loading}
+                    placeholder="حداقل ۶ کاراکتر"
                   />
                   {errors.password && (
                     <p className="text-sm text-red-500 mt-1">{errors.password}</p>
@@ -225,6 +255,7 @@ const Auth = () => {
                     required
                     className="bg-space-dark-blue/50 border-space-stellar/30"
                     disabled={loading}
+                    placeholder="نام کامل خود را وارد کنید"
                   />
                   {errors.name && (
                     <p className="text-sm text-red-500 mt-1">{errors.name}</p>
@@ -240,6 +271,7 @@ const Auth = () => {
                     required
                     className="bg-space-dark-blue/50 border-space-stellar/30"
                     disabled={loading}
+                    placeholder="example@gmail.com"
                   />
                   {errors.email && (
                     <p className="text-sm text-red-500 mt-1">{errors.email}</p>
@@ -255,6 +287,7 @@ const Auth = () => {
                     required
                     className="bg-space-dark-blue/50 border-space-stellar/30"
                     disabled={loading}
+                    placeholder="حداقل ۶ کاراکتر"
                   />
                   {errors.password && (
                     <p className="text-sm text-red-500 mt-1">{errors.password}</p>
@@ -277,6 +310,12 @@ const Auth = () => {
               </form>
             </TabsContent>
           </Tabs>
+          
+          <div className="mt-4 text-center">
+            <p className="text-sm text-gray-500">
+              در صورت مشکل در ورود، ابتدا ایمیل خود را تأیید کنید
+            </p>
+          </div>
         </CardContent>
       </Card>
     </div>
