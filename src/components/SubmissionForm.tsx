@@ -49,7 +49,7 @@ const SubmissionForm = () => {
         .from('submissions')
         .select('id, title, status')
         .eq('user_id', user.id)
-        .in('status', ['pending', 'under_review', 'revision_required']);
+        .eq('status', 'pending'); // Only check for 'pending' status since it's the only allowed one for "in review"
       
       if (error) {
         console.error('خطا در بررسی مقالات در حال بررسی:', error);
@@ -211,7 +211,7 @@ const SubmissionForm = () => {
           user_id: user.id,
           title: values.title,
           content: values.content,
-          status: 'pending'
+          status: 'pending' // Use only 'pending' status which is allowed
         })
         .select()
         .single();
