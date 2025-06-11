@@ -7,8 +7,7 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
-import { Alert, AlertDescription } from '@/components/ui/alert';
-import { AlertCircle, Loader2, Mail } from 'lucide-react';
+import { Loader2 } from 'lucide-react';
 
 const Auth = () => {
   const [email, setEmail] = useState('');
@@ -16,7 +15,6 @@ const Auth = () => {
   const [name, setName] = useState('');
   const [loading, setLoading] = useState(false);
   const [errors, setErrors] = useState<{[key: string]: string}>({});
-  const [showEmailConfirmMessage, setShowEmailConfirmMessage] = useState(false);
   const { signUp, signIn } = useAuth();
 
   const validateForm = (isSignUp: boolean = false) => {
@@ -51,10 +49,9 @@ const Auth = () => {
 
     setLoading(true);
     setErrors({});
-    setShowEmailConfirmMessage(false);
     
     try {
-      const { error, data } = await signUp(email.trim(), password, name.trim());
+      const { error } = await signUp(email.trim(), password, name.trim());
       
       if (error) {
         console.error('خطا در ثبت‌نام:', error);
@@ -67,8 +64,6 @@ const Auth = () => {
           errorMessage = 'فرمت ایمیل صحیح نیست';
         } else if (error.message?.includes('Password should be at least')) {
           errorMessage = 'رمز عبور باید حداقل ۶ کاراکتر باشد';
-        } else if (error.message?.includes('Signup requires a valid password')) {
-          errorMessage = 'رمز عبور معتبر وارد کنید';
         } else {
           errorMessage = error.message || 'خطا در ثبت‌نام';
         }
@@ -79,20 +74,10 @@ const Auth = () => {
           variant: "destructive"
         });
       } else {
-        // Check if user needs email confirmation
-        if (data?.user && !data.session) {
-          setShowEmailConfirmMessage(true);
-          toast({
-            title: "ثبت‌نام موفق",
-            description: "لطفاً ایمیل خود را بررسی کرده و لینک تأیید را کلیک کنید.",
-            variant: "default"
-          });
-        } else {
-          toast({
-            title: "ثبت‌نام موفق",
-            description: "ثبت‌نام با موفقیت انجام شد. در حال ورود به سیستم..."
-          });
-        }
+        toast({
+          title: "ثبت‌نام موفق",
+          description: "ثبت‌نام با موفقیت انجام شد و وارد شدید!"
+        });
         
         // Reset form
         setEmail('');
@@ -120,7 +105,6 @@ const Auth = () => {
 
     setLoading(true);
     setErrors({});
-    setShowEmailConfirmMessage(false);
     
     try {
       const { error } = await signIn(email.trim(), password);
@@ -131,15 +115,9 @@ const Auth = () => {
         let errorMessage = 'خطا در ورود';
         
         if (error.message?.includes('Invalid login credentials')) {
-          errorMessage = 'ایمیل یا رمز عبور اشتباه است. در صورت تازه ثبت‌نام کردن، ابتدا ایمیل خود را تأیید کنید.';
-        } else if (error.message?.includes('Email not confirmed')) {
-          errorMessage = 'لطفاً ابتدا ایمیل خود را تأیید کنید. ایمیل خود را بررسی کرده و روی لینک تأیید کلیک کنید.';
-          setShowEmailConfirmMessage(true);
+          errorMessage = 'ایمیل یا رمز عبور اشتباه است';
         } else if (error.message?.includes('Too many requests')) {
           errorMessage = 'تعداد تلاش‌های ورود بیش از حد. لطفاً کمی بعد تلاش کنید';
-        } else if (error.message?.includes('signup requires email confirmation')) {
-          errorMessage = 'ایمیل شما هنوز تأیید نشده است. لطفاً ایمیل خود را بررسی کنید.';
-          setShowEmailConfirmMessage(true);
         } else {
           errorMessage = error.message || 'خطا در ورود';
         }
@@ -177,15 +155,6 @@ const Auth = () => {
           </CardDescription>
         </CardHeader>
         <CardContent>
-          {showEmailConfirmMessage && (
-            <Alert className="mb-4 border-yellow-500 bg-yellow-50 text-yellow-800">
-              <Mail className="h-4 w-4" />
-              <AlertDescription>
-                ایمیل تأیید برای شما ارسال شده است. لطفاً صندوق ورودی (و پوشه spam) خود را بررسی کرده و روی لینک تأیید کلیک کنید تا بتوانید وارد شوید.
-              </AlertDescription>
-            </Alert>
-          )}
-          
           <Tabs defaultValue="signin" className="w-full">
             <TabsList className="grid w-full grid-cols-2">
               <TabsTrigger value="signin">ورود</TabsTrigger>
@@ -310,12 +279,6 @@ const Auth = () => {
               </form>
             </TabsContent>
           </Tabs>
-          
-          <div className="mt-4 text-center">
-            <p className="text-sm text-gray-500">
-              در صورت مشکل در ورود، ابتدا ایمیل خود را تأیید کنید
-            </p>
-          </div>
         </CardContent>
       </Card>
     </div>
