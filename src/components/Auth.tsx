@@ -65,6 +65,8 @@ const Auth = () => {
           errorMessage = 'فرمت ایمیل صحیح نیست';
         } else if (error.message?.includes('Password should be at least')) {
           errorMessage = 'رمز عبور باید حداقل ۶ کاراکتر باشد';
+        } else if (error.message?.includes('Email not confirmed')) {
+          errorMessage = 'لطفاً مجدداً از تب ورود تلاش کنید';
         } else {
           errorMessage = error.message || 'خطا در ثبت‌نام';
         }
@@ -121,7 +123,7 @@ const Auth = () => {
         if (error.message?.includes('Invalid login credentials')) {
           errorMessage = 'ایمیل یا رمز عبور اشتباه است';
         } else if (error.message?.includes('Email not confirmed')) {
-          errorMessage = 'باید گزینه "Confirm email" را در Supabase خاموش کنید';
+          errorMessage = 'لطفاً ابتدا از تب ثبت‌نام استفاده کنید';
         } else if (error.message?.includes('Too many requests')) {
           errorMessage = 'تعداد تلاش‌های ورود بیش از حد. لطفاً کمی بعد تلاش کنید';
         } else {
@@ -139,6 +141,10 @@ const Auth = () => {
           title: "ورود موفق",
           description: "با موفقیت وارد شدید!"
         });
+        
+        // Reset form
+        setEmail('');
+        setPassword('');
       }
     } catch (error) {
       console.error('Signin exception:', error);
@@ -161,19 +167,12 @@ const Auth = () => {
             به جامعه کاوشگران کیهان بپیوندید
           </CardDescription>
           
-          {/* Important notice */}
+          {/* Simplified notice */}
           <div className="mt-4 space-y-3">
-            <div className="p-3 bg-red-500/20 border border-red-500/30 rounded-lg flex items-center gap-2 text-sm text-red-200">
-              <AlertCircle className="h-4 w-4 flex-shrink-0" />
-              <div className="text-right">
-                <strong>مهم:</strong> اگر خطای "Email not confirmed" می‌بینید، باید در تنظیمات Supabase گزینه "Confirm email" را خاموش کنید.
-              </div>
-            </div>
-            
-            <div className="p-3 bg-green-500/20 border border-green-500/30 rounded-lg flex items-center gap-2 text-sm text-green-200">
+            <div className="p-3 bg-blue-500/20 border border-blue-500/30 rounded-lg flex items-center gap-2 text-sm text-blue-200">
               <CheckCircle className="h-4 w-4 flex-shrink-0" />
               <div className="text-right">
-                پس از خاموش کردن تأیید ایمیل، بلافاصله پس از ثبت‌نام وارد خواهید شد.
+                پس از ثبت‌نام بلافاصله وارد خواهید شد
               </div>
             </div>
           </div>

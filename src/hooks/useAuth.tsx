@@ -63,7 +63,8 @@ export function useAuth() {
         options: {
           data: {
             name: name
-          }
+          },
+          // Remove emailRedirectTo to avoid confirmation issues
         }
       });
 
@@ -74,11 +75,16 @@ export function useAuth() {
         return { error, data };
       }
 
-      // If signup was successful but no session (email confirmation required)
+      // If user is created and we have a session, great!
+      if (data.user && data.session) {
+        console.log('Signup successful with immediate session');
+        return { error: null, data };
+      }
+
+      // If user is created but no session, try to sign in immediately
       if (data.user && !data.session) {
         console.log('User created but no session - trying immediate signin');
         
-        // Try to sign in immediately
         const { data: signInData, error: signInError } = await supabase.auth.signInWithPassword({
           email,
           password
