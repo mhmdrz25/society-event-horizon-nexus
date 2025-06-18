@@ -55,22 +55,42 @@ export function useAuth() {
 
   const signUp = async (email: string, password: string, name: string) => {
     try {
+      console.log('Attempting signup with:', { email, name });
+      
       const { data, error } = await supabase.auth.signUp({
         email,
         password,
         options: {
           data: {
             name: name
-          },
-          // Don't require email confirmation for free plan
-          emailRedirectTo: undefined
+          }
         }
       });
 
+      console.log('Signup response:', { data, error });
+
       if (error) {
         console.error('Sign up error:', error);
-      } else {
-        console.log('Sign up successful:', data);
+        return { error, data };
+      }
+
+      // If signup was successful but no session (email confirmation required)
+      if (data.user && !data.session) {
+        console.log('User created but no session - trying immediate signin');
+        
+        // Try to sign in immediately
+        const { data: signInData, error: signInError } = await supabase.auth.signInWithPassword({
+          email,
+          password
+        });
+
+        if (signInError) {
+          console.error('Immediate signin failed:', signInError);
+          return { error: signInError, data };
+        }
+
+        console.log('Immediate signin successful:', signInData);
+        return { error: null, data: signInData };
       }
 
       return { error, data };
@@ -82,10 +102,14 @@ export function useAuth() {
 
   const signIn = async (email: string, password: string) => {
     try {
+      console.log('Attempting signin with:', email);
+      
       const { data, error } = await supabase.auth.signInWithPassword({
         email,
         password
       });
+
+      console.log('Signin response:', { data, error });
 
       if (error) {
         console.error('Sign in error:', error);

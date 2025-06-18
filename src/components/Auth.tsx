@@ -7,7 +7,7 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
-import { Loader2, AlertCircle } from 'lucide-react';
+import { Loader2, AlertCircle, CheckCircle } from 'lucide-react';
 
 const Auth = () => {
   const [email, setEmail] = useState('');
@@ -51,10 +51,11 @@ const Auth = () => {
     setErrors({});
     
     try {
+      console.log('Starting signup process...');
       const { error, data } = await signUp(email.trim(), password, name.trim());
       
       if (error) {
-        console.error('خطا در ثبت‌نام:', error);
+        console.error('Signup error:', error);
         
         let errorMessage = 'خطا در ثبت‌نام';
         
@@ -64,8 +65,6 @@ const Auth = () => {
           errorMessage = 'فرمت ایمیل صحیح نیست';
         } else if (error.message?.includes('Password should be at least')) {
           errorMessage = 'رمز عبور باید حداقل ۶ کاراکتر باشد';
-        } else if (error.message?.includes('Email not confirmed')) {
-          errorMessage = 'لطفاً ایمیل خود را تأیید کنید و سپس وارد شوید';
         } else {
           errorMessage = error.message || 'خطا در ثبت‌نام';
         }
@@ -76,18 +75,12 @@ const Auth = () => {
           variant: "destructive"
         });
       } else {
-        // Check if user is immediately signed in (email confirmation disabled)
-        if (data.session) {
-          toast({
-            title: "ثبت‌نام موفق",
-            description: "ثبت‌نام با موفقیت انجام شد و وارد شدید!"
-          });
-        } else {
-          toast({
-            title: "ثبت‌نام موفق",
-            description: "حساب شما ایجاد شد. اکنون می‌توانید وارد شوید."
-          });
-        }
+        console.log('Signup successful:', data);
+        
+        toast({
+          title: "ثبت‌نام موفق",
+          description: "ثبت‌نام با موفقیت انجام شد و وارد شدید!",
+        });
         
         // Reset form
         setEmail('');
@@ -95,7 +88,7 @@ const Auth = () => {
         setName('');
       }
     } catch (error) {
-      console.error('خطای غیرمنتظره در ثبت‌نام:', error);
+      console.error('Signup exception:', error);
       toast({
         title: "خطا",
         description: "خطای غیرمنتظره در ثبت‌نام",
@@ -117,17 +110,18 @@ const Auth = () => {
     setErrors({});
     
     try {
+      console.log('Starting signin process...');
       const { error } = await signIn(email.trim(), password);
       
       if (error) {
-        console.error('خطا در ورود:', error);
+        console.error('Signin error:', error);
         
         let errorMessage = 'خطا در ورود';
         
         if (error.message?.includes('Invalid login credentials')) {
           errorMessage = 'ایمیل یا رمز عبور اشتباه است';
         } else if (error.message?.includes('Email not confirmed')) {
-          errorMessage = 'ایمیل شما تأیید نشده است. لطفاً ایمیل خود را بررسی کنید یا مجدداً ثبت‌نام کنید.';
+          errorMessage = 'باید گزینه "Confirm email" را در Supabase خاموش کنید';
         } else if (error.message?.includes('Too many requests')) {
           errorMessage = 'تعداد تلاش‌های ورود بیش از حد. لطفاً کمی بعد تلاش کنید';
         } else {
@@ -140,13 +134,14 @@ const Auth = () => {
           variant: "destructive"
         });
       } else {
+        console.log('Signin successful');
         toast({
           title: "ورود موفق",
           description: "با موفقیت وارد شدید!"
         });
       }
     } catch (error) {
-      console.error('خطای غیرمنتظره در ورود:', error);
+      console.error('Signin exception:', error);
       toast({
         title: "خطا",
         description: "خطای غیرمنتظره در ورود",
@@ -166,11 +161,20 @@ const Auth = () => {
             به جامعه کاوشگران کیهان بپیوندید
           </CardDescription>
           
-          {/* Email confirmation notice */}
-          <div className="mt-4 p-3 bg-amber-500/20 border border-amber-500/30 rounded-lg flex items-center gap-2 text-sm text-amber-200">
-            <AlertCircle className="h-4 w-4 flex-shrink-0" />
-            <div className="text-right">
-              اگر مشکل تأیید ایمیل دارید، در تنظیمات Supabase گزینه "Confirm email" را خاموش کنید.
+          {/* Important notice */}
+          <div className="mt-4 space-y-3">
+            <div className="p-3 bg-red-500/20 border border-red-500/30 rounded-lg flex items-center gap-2 text-sm text-red-200">
+              <AlertCircle className="h-4 w-4 flex-shrink-0" />
+              <div className="text-right">
+                <strong>مهم:</strong> اگر خطای "Email not confirmed" می‌بینید، باید در تنظیمات Supabase گزینه "Confirm email" را خاموش کنید.
+              </div>
+            </div>
+            
+            <div className="p-3 bg-green-500/20 border border-green-500/30 rounded-lg flex items-center gap-2 text-sm text-green-200">
+              <CheckCircle className="h-4 w-4 flex-shrink-0" />
+              <div className="text-right">
+                پس از خاموش کردن تأیید ایمیل، بلافاصله پس از ثبت‌نام وارد خواهید شد.
+              </div>
             </div>
           </div>
         </CardHeader>
